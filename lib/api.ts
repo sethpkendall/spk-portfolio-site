@@ -82,6 +82,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
     }`,
     isDraftMode,
   );
+  console.log("entries",entries);
   return extractPostEntries(entries);
 }
 
