@@ -16,6 +16,8 @@
     "autoprefixer": "10.4.15",
     "contentful-import": "^9.0.4",
     "date-fns": "2.30.0",
+    "dexie": "^4.0.8",
+    "dexie-react-hooks": "^1.1.7",
     "next": "latest",
     "postcss": "8.4.31",
     "react": "^18.2.0",

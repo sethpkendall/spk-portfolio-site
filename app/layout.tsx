@@ -1,5 +1,7 @@
 import "./globals.css";
+import Link from "next/link";
 import { Inter } from "next/font/google";
+import { headers } from 'next/headers';
 
 export const metadata = {
   title: `Seth P. Kendall's portfolio Site`,
@@ -11,6 +13,36 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 });
+
+function Header() {
+  const headersList = headers();
+  // read the custom x-url header
+  // NOTE - this is a hacky way to get the current URL AND it makes SSR not work
+  // More information here: https://github.com/vercel/next.js/issues/43704#issuecomment-1411186664
+  const header_url = headersList.get('x-url') || "";
+  const header_JS_url = new URL(header_url)
+
+  return (
+    <div className="container mx-auto px-5">
+      <section className="flex-col md:flex-row flex items-center md:justify-between mt-16 mb-16 md:mb-12">
+        { header_JS_url.pathname === "/" &&
+        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight md:pr-8">
+          Seth P. Kendall
+        </h1>
+        }
+        { header_JS_url.pathname !== "/" &&
+          <h2 className="mb-20 mt-8 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
+            <Link href="/" className="hover:underline">
+              Home
+            </Link>
+            .
+          </h2>
+        }
+        <a href="/project/meal-planner">meal planner</a>
+      </section>
+    </div>
+  );
+}
 
 function Footer() {
   return (
@@ -35,6 +67,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body>
         <section className="min-h-screen">
+          <Header />
           <main>{children}</main>
           <Footer />
         </section>
