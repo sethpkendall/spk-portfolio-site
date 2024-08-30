@@ -10,6 +10,9 @@ import { populate } from './populate';
 interface Meal {
     id?:number;
     title:string;
+    date:Date;
+    type:string;
+    foods?:Food[];
 }
 
 interface Food {
@@ -29,9 +32,9 @@ export class MealPlannerDB extends Dexie {
     recipes!: Table<Recipe, number>
     constructor() {
         super('MealPlannerDB');
-        this.version(1).stores({
+        this.version(3).stores({
             // days: '++id, title, date',
-            meals: '++id, title',
+            meals: '++id, title, date',
             foods:'++id, title',
             recipes: 'mealId, foodId'
         });

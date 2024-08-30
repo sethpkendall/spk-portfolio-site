@@ -2,7 +2,9 @@ import { db } from "./db";
 
 export async function populate() {
   const mealId = await db.meals.add({
-    title: "Burger Dinner"
+    title: "Burger Dinner",
+    date: new Date(),
+    type: "Dinner"
   });
   const foodId1 = await db.foods.add({
     mealId,

@@ -31,7 +31,7 @@ function Header() {
         </h1>
         }
         { header_JS_url.pathname !== "/" &&
-          <h2 className="mb-20 mt-8 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
+          <h2 className="mb-10 mt-8 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
             <Link href="/" className="hover:underline">
               Home
             </Link>
