@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Input } from '@/components/ui/Input';
 import { db } from "../../../../models/db";
 
 export function AddFoodForm({ defaultAge } = { defaultAge: 21 }) {
@@ -23,7 +24,7 @@ export function AddFoodForm({ defaultAge } = { defaultAge: 21 }) {
       <>
         <p>{status}</p>
         Label:
-        <input
+        <Input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}

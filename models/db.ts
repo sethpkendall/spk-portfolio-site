@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 import { populate } from './populate';
+import { Meal, Food, Recipe } from './interfaces';
 
 // interface Day {
 //     id?:number;
@@ -7,23 +8,6 @@ import { populate } from './populate';
 //     date:Date;
 // }
 
-interface Meal {
-    id?:number;
-    title:string;
-    date:Date;
-    type:string;
-    foods?:Food[];
-}
-
-interface Food {
-    id?:number;
-    title:string;
-}
-
-interface Recipe {
-    mealId:number;
-    foodId:number;
-}
 
 export class MealPlannerDB extends Dexie {
     // days!: Table<Day, number>

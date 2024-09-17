@@ -17,8 +17,12 @@ export function getWeekDateStrings(startDate:Date){
     return weekDateStrings;
 }
 
-// export function getInitialShownWeek() {
-//     const intialSunday = new Date(new Date(new Date().setDate(new Date().getDate() - new Date().getDay())).setHours(0,0,0,0))
-//     const initialSundayString:string = `${intialSunday.getMonth()+1}-${intialSunday.getDate()}-${intialSunday.getFullYear()}`;
-//     return intialSunday;
-//   }
+export function getWeekdayString(date:Date){
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return weekdays[date.getDay()];
+}
+
+export function getDayAndDate(date:string){
+    const dateArray = date.split('-');
+    return `${getWeekdayString(new Date(date))}, ${dateArray[0]}/${dateArray[1]}`;
+}

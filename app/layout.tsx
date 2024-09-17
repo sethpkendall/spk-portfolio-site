@@ -24,14 +24,14 @@ function Header() {
 
   return (
     <div className="container mx-auto px-5">
-      <section className="flex-col md:flex-row flex items-center md:justify-between mt-16 mb-16 md:mb-12">
+      <section className="flex-col md:flex-row flex items-center md:justify-between mt-12 mb-12 md:mb-8">
         { header_JS_url.pathname === "/" &&
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight md:pr-8">
           Seth P. Kendall
         </h1>
         }
         { header_JS_url.pathname !== "/" &&
-          <h2 className="mb-10 mt-8 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
+          <h2 className="mb-6 mt-4 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
             <Link href="/" className="hover:underline">
               Home
             </Link>
