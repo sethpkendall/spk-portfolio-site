@@ -52,7 +52,7 @@ export default function MealPlanner() {
     const meals = await db.meals.where("date").between(startDate, endDate, true, true).toArray();
     for(const meal of meals) {
       const mealDate = new Date(meal.date);
-      if(mealDate > startDate && mealDate < endDate) {
+      if(mealDate >= startDate && mealDate < endDate) {
         const mealDateString = `${mealDate.getMonth()+1}-${mealDate.getDate()}-${mealDate.getFullYear()}`;
         currentWeekMealState[mealDateString][meal.type.toLowerCase()] = meal;
       }
