@@ -25,15 +25,16 @@ import {
 import { Meal } from "@/models/interfaces"
 
 type MealComboboxProps = {
+    addNewText: string;
     commandInputValue: string;
     setCommandInputValue: (commandInputValue:string) => void;
     selectedMeal: Meal | null;
-    setSelectedMeal: (selectedMeal:boolean) => void;
+    setSelectedMeal: (selectedMeal:Meal) => void;
     submitMeal: (typedValue:string) => void;
     meals: {label: string, value: Meal}[];
 };
 
-export function MealCombobox({ meals, selectedMeal, setSelectedMeal, submitMeal, commandInputValue, setCommandInputValue }: MealComboboxProps) {
+export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal, submitMeal, commandInputValue, setCommandInputValue }: MealComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
@@ -49,8 +50,8 @@ export function MealCombobox({ meals, selectedMeal, setSelectedMeal, submitMeal,
             <Command>
                 <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal..." />
                 <CommandList>
-                    <CommandEmpty className="flex justify-items-end">
-                    <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Add New Meal</button>
+                    <CommandEmpty className="flex justify-center items-center p-2">
+                    <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
                     </CommandEmpty>
                     <CommandGroup>
                     {meals.map((meal) => (

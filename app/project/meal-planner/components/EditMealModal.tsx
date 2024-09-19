@@ -1,33 +1,36 @@
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import{ MealCombobox } from './MealCombobox';
 import { MealContext } from '@/contexts/MealContext';
 import { getWeekdayString } from '@/lib/utils';
 import { db } from '@/models/db';
 import { Meal } from '@/models/interfaces';
+import {localeFormat} from 'light-date';
 
-type AddMealModalProps = {
-    showModal: boolean;
-    setShowModal: (showModal:boolean) => void;
-    uniqueMealsDatabase: {label: string, value: Meal}[];
+type EditMealModalProps = {
+    showEditModal: boolean;
+    setShowEditModal: (showEditModal:boolean) => void;
+    mealDatabase: {label: string, value: Meal}[];
 };
 
-export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase}:AddMealModalProps){
-    const [selectedMeal, setSelectedMeal] = useState<Meal | null>(
-        null
-    );
+export default function EditMealModal({showEditModal,setShowEditModal,mealDatabase}:EditMealModalProps){
     const [commandInputValue, setCommandInputValue] = useState("");
     const {
         mealState,
         setMealState
-      } = useContext(MealContext);
+    } = useContext(MealContext);
 
-    const submitMeal = async (typedValue) => {
-        await db.meals.add({
+    const [selectedMeal, setSelectedMeal] = useState<Meal | null>(
+        mealState ? mealDatabase.find((meal)=>meal.value.id === mealState.id) : null
+    );
+
+    const updateMeal = async (typedValue = false) => {
+        await db.meals.put({
+            id: mealState.id,
             title: typedValue ? typedValue : selectedMeal.label,
             date: mealState.date,
             type: mealState.type
         });
-        setShowModal(false);
+        setShowEditModal(false);
     };
 
     return (
@@ -44,24 +47,24 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
                                 </svg>
                                 </div>
                                 <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {getWeekdayString(mealState.date)} {mealState.type}</h3>
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {localeFormat(new Date(mealState.date),"{EEEE}")} {mealState.type}</h3>
                                     <div className="mt-2">
                                         <MealCombobox
-                                            addNewText="Add New Meal"
+                                            addNewText="Submit Update"
                                             selectedMeal={selectedMeal}
                                             setSelectedMeal={setSelectedMeal}
                                             commandInputValue={commandInputValue}
                                             setCommandInputValue={setCommandInputValue}
-                                            submitMeal={submitMeal}
-                                            meals={uniqueMealsDatabase}
+                                            submitMeal={updateMeal}
+                                            meals={mealDatabase}
                                         />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <button onClick={()=>submitMeal()} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Submit</button>
-                            <button onClick={()=>setShowModal(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                            <button onClick={()=>updateMeal()} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Submit</button>
+                            <button onClick={()=>setShowEditModal(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                         </div>
                     </div>
                 </div>
