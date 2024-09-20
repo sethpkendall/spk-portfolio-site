@@ -1,7 +1,7 @@
 export interface Meal {
     id?:number;
     title:string;
-    date:Date;
+    date?:Date;
     type:string;
     foods?:Food[];
 }

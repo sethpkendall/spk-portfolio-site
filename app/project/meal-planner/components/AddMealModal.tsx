@@ -12,22 +12,29 @@ type AddMealModalProps = {
 };
 
 export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase}:AddMealModalProps){
-    const [selectedMeal, setSelectedMeal] = useState<Meal | null>(
+    const [selectedMeal, setSelectedMeal] = useState<{label: string, value: Meal} | null>(
         null
     );
     const [commandInputValue, setCommandInputValue] = useState("");
     const {
-        mealState,
-        setMealState
+        mealState
       } = useContext(MealContext);
 
-    const submitMeal = async (typedValue) => {
+    const submitMeal = async () => {
         await db.meals.add({
-            title: typedValue ? typedValue : selectedMeal.label,
-            date: mealState.date,
+            title: selectedMeal?.label || '',
+            date: mealState.date || undefined,
             type: mealState.type
         });
         setShowModal(false);
+    };
+
+    const submitNewMeal = async (typedValue:string) => {
+        await db.meals.add({
+            title: typedValue,
+            date: mealState.date || undefined,
+            type: mealState.type
+        });
     };
 
     return (
@@ -44,7 +51,7 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
                                 </svg>
                                 </div>
                                 <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {getWeekdayString(mealState.date)} {mealState.type}</h3>
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {getWeekdayString(mealState.date || undefined)} {mealState.type}</h3>
                                     <div className="mt-2">
                                         <MealCombobox
                                             addNewText="Add New Meal"
@@ -52,7 +59,7 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
                                             setSelectedMeal={setSelectedMeal}
                                             commandInputValue={commandInputValue}
                                             setCommandInputValue={setCommandInputValue}
-                                            submitMeal={submitMeal}
+                                            submitMeal={submitNewMeal}
                                             meals={uniqueMealsDatabase}
                                         />
                                     </div>

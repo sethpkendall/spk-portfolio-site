@@ -43,7 +43,7 @@ export default function MealPlannerTool(
         case 0:
             componentToRender = <div>loading...</div>;
         case 1:
-            componentToRender = <MealCarousel setShowModal={setShowModal} meals={meals} weekDateStrings={weekDateStrings}/>
+            // componentToRender = <MealCarousel setShowModal={setShowModal} meals={meals} weekDateStrings={weekDateStrings}/>
         case 7:
             componentToRender = <MealGrid setShowModal={setShowModal} setShowEditModal={setShowEditModal} meals={meals} weekDateStrings={weekDateStrings}/>;
     }

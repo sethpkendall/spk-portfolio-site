@@ -17,9 +17,9 @@ export function getWeekDateStrings(startDate:Date){
     return weekDateStrings;
 }
 
-export function getWeekdayString(date:Date){
+export function getWeekdayString(date:Date|undefined){
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return weekdays[date.getDay()];
+    return date ? weekdays[date.getDay()] : '';
 }
 
 export function getDayAndDate(date:string){

@@ -28,8 +28,8 @@ type MealComboboxProps = {
     addNewText: string;
     commandInputValue: string;
     setCommandInputValue: (commandInputValue:string) => void;
-    selectedMeal: Meal | null;
-    setSelectedMeal: (selectedMeal:Meal) => void;
+    selectedMeal: {label: string, value: Meal} | null;
+    setSelectedMeal: (selectedMeal:{label: string, value: Meal}|null) => void;
     submitMeal: (typedValue:string) => void;
     meals: {label: string, value: Meal}[];
 };
@@ -57,7 +57,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
                     {meals.map((meal) => (
                         <CommandItem
                         key={meal.value.id}
-                        value={meal.value}
+                        value={meal.value.title}
                         onSelect={(value) => {
                             setSelectedMeal(meals.find((meal) => meal.label === value) || null);
                             setOpen(false);
@@ -91,7 +91,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
                     {meals.map((meal,test) => (
                         <CommandItem
                         key={meal.value.id}
-                        value={meal.value}
+                        value={meal.value.title}
                         onSelect={(value) => {
                             console.log(value);
                         }}
@@ -107,17 +107,3 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
     </Drawer>
   )
 }
-
-// function MealList({
-//   setOpen,
-//   setSelectedMeal,
-//   meals
-// }: {
-//   setOpen: (open: boolean) => void
-//   setSelectedMeal: (meal: Meal | null) => void
-//   meals: {label: string, value: Meal}[]
-// }) {
-//   return (
-    
-//   )
-// }

@@ -13,6 +13,8 @@ import { Meal } from '@/models/interfaces';
 import MealPlannerTool from "./components/MealPlannerTool";
 import AddMealModal from "./components/AddMealModal";
 import EditMealModal from "./components/EditMealModal";
+//type imports
+import { ObjectType } from 'typescript';
 
 
 export default function MealPlanner() {
@@ -24,10 +26,13 @@ export default function MealPlanner() {
   const [mealDatabase, setMealDatabase] = useState<{ label: string; value: Meal; }[]>([]);
   const [uniqueMealsDatabase, setUniqueMealsDatabase] = useState<{ label: string; value: Meal; }[]>([]);
   const [mealPlannerHeight, setMealPlannerHeight] = useState(200);
-  const [mealState, setMealState] = useState({
-    title: '',
-    date: null,
-    type: ''
+  const [mealState, setMealState] = useState<{
+      id: number | undefined; title: string; date: Date | undefined | null; type: string;
+  }>({
+      id: undefined,
+      title: '',
+      date: null,
+      type: ''
   });
 
   useLiveQuery(async () => {
@@ -46,7 +51,7 @@ export default function MealPlanner() {
     // get meals for this week
     const startDate = shownWeek;
     const endDate = new Date(new Date(new Date().setDate(new Date().getDate() + (6 - new Date().getDay()))).setHours(23,59));
-    const currentWeekMealState: { [key: string]: { breakfast: any, lunch: any, dinner: any } } = {};
+    const currentWeekMealState: { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } } = {} as { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } };
     // create 7 needed date keys
     const weekDateStrings = getWeekDateStrings(startDate);
     for(const currentDateString of weekDateStrings) {
@@ -59,13 +64,13 @@ export default function MealPlanner() {
     // iterate meal results
     const meals = await db.meals.where("date").between(startDate, endDate, true, true).toArray();
     for(const meal of meals) {
-      const mealDate = new Date(meal.date);
-      if(mealDate >= startDate && mealDate < endDate) {
+      const mealDate = meal.date ? new Date(meal.date) : null;
+      if(mealDate && mealDate >= startDate && mealDate < endDate) {
         const mealDateString = `${mealDate.getMonth()+1}-${mealDate.getDate()}-${mealDate.getFullYear()}`;
         if(!currentWeekMealState[mealDateString]) {
           break;
         }
-        currentWeekMealState[mealDateString][meal.type.toLowerCase()] = meal;
+        currentWeekMealState[mealDateString as keyof ObjectType][meal.type.toLowerCase() ] = meal;
       }
     }
     setWeekMealState(currentWeekMealState);
@@ -84,7 +89,7 @@ export default function MealPlanner() {
 
   return ( 
     <div className="container mx-auto px-5">
-      <MealContext.Provider value={{mealState, setMealState}}>
+      <MealContext.Provider value={{mealState, setMealState: (value: {id: number | undefined; title: string; date: Date | undefined | null; type: string;}) => setMealState(value)}}>
         <MealPlannerTool
           meals={weekMealState}
           dayCount={dayCount}

@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { populate } from './populate';
+// import { populate } from './populate';
 import { Meal, Food, Recipe } from './interfaces';
 
 // interface Day {
@@ -27,11 +27,11 @@ export class MealPlannerDB extends Dexie {
 
 export const db = new MealPlannerDB();
 
-db.on('populate', populate);
+// db.on('populate', populate);
 
 export function resetDatabase() {
     return db.transaction('rw', db.meals, db.foods, db.recipes, async () => {
         await Promise.all(db.tables.map(table => table.clear()));
-        await populate();
+        // await populate();
     });
 }
