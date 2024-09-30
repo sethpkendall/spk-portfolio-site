@@ -1,6 +1,5 @@
 import MealGridPanel from './MealGridPanel';
 import { Meal } from '@/models/interfaces';
-import { getDayAndDate } from '@/lib/utils';
 import {localeFormat} from 'light-date';
 
 type MealGridProps = {
@@ -21,9 +20,9 @@ export default function MealGrid({meals,setShowEditModal,setShowModal,weekDateSt
         <div className="flex flex-row h-full">
             <div className="dayParent mx-1">
                 <div className='spaceDiv h-[5%]'></div>
-                <div className='h-[28%] mb-4 flex justify-start items-start font-bold'>Breakfast</div>
-                <div className='h-[28%] mb-4 flex justify-start items-start font-bold'>Lunch</div>
-                <div className='h-[28%] mb-4 flex justify-start items-start font-bold'>Dinner</div>
+                <div className='h-[26%] mb-4 flex justify-start items-start font-bold'>Breakfast</div>
+                <div className='h-[26%] mb-4 flex justify-start items-start font-bold'>Lunch</div>
+                <div className='h-[26%] mb-4 flex justify-start items-start font-bold'>Dinner</div>
             </div>
         {meals && weekDateStrings.map((dayString,dayIndex) => {
             const currDayMealData = meals[dayString];

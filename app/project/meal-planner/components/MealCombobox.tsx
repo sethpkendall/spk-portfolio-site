@@ -48,7 +48,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
         </PopoverTrigger>
         <PopoverContent className="bg-white p-0" align="start">
             <Command>
-                <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal..." />
+                <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal or add new..." />
                 <CommandList>
                     <CommandEmpty className="flex justify-center items-center p-2">
                     <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
@@ -78,23 +78,26 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
-          {selectedMeal ? <>{selectedMeal.label}</> : <>+ Set status</>}
+          {selectedMeal ? <>{selectedMeal.label}</> : <>+ Pick Meal</>}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t">
             <Command>
-                <CommandInput placeholder="Filter meal..." />
+                <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal or add new..." />
                 <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
+                  <CommandEmpty className="flex justify-center items-center p-2">
+                  <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
+                  </CommandEmpty>
                     <CommandGroup>
                     {meals.map((meal,test) => (
                         <CommandItem
                         key={meal.value.id}
                         value={meal.value.title}
                         onSelect={(value) => {
-                            console.log(value);
-                        }}
+                          setSelectedMeal(meals.find((meal) => meal.label === value) || null);
+                          setOpen(false);
+                      }}
                         >
                         {meal.label}
                         </CommandItem>

@@ -2,6 +2,7 @@ import { getWeekDateStrings } from "@/lib/utils";
 import MealGrid from "./MealGrid";
 import MealCarousel from "./MealCarousel";
 import WeekPager from "./WeekPager";
+import { useEffect } from "react";
 
   interface Meal {
     title: string;
@@ -14,7 +15,6 @@ import WeekPager from "./WeekPager";
 
   interface MealPlannerToolProps {
     dayCount: number;
-    mealPlannerHeight: number;
     meals: {
         [key: string]: {
             breakfast: Meal;
@@ -32,20 +32,25 @@ export default function MealPlannerTool(
     {
     dayCount,
     meals,
-    mealPlannerHeight,
     setShowEditModal,
     setShowModal,
     setShownWeek,
     shownWeek}:MealPlannerToolProps): JSX.Element{
     const weekDateStrings = getWeekDateStrings(shownWeek);
+    useEffect(() => {
+        console.log(shownWeek);
+    }, [shownWeek]);
     let componentToRender;
     switch (dayCount) {
         case 0:
             componentToRender = <div>loading...</div>;
+            break;
         case 1:
-            // componentToRender = <MealCarousel setShowModal={setShowModal} meals={meals} weekDateStrings={weekDateStrings}/>
+            componentToRender = <MealCarousel setShowModal={setShowModal} setShowEditModal={setShowEditModal} meals={meals} weekDateStrings={weekDateStrings}/>
+            break;
         case 7:
             componentToRender = <MealGrid setShowModal={setShowModal} setShowEditModal={setShowEditModal} meals={meals} weekDateStrings={weekDateStrings}/>;
+            break;
     }
     
     return(

@@ -25,7 +25,6 @@ export default function MealPlanner() {
   const [weekMealState, setWeekMealState] = useState({});
   const [mealDatabase, setMealDatabase] = useState<{ label: string; value: Meal; }[]>([]);
   const [uniqueMealsDatabase, setUniqueMealsDatabase] = useState<{ label: string; value: Meal; }[]>([]);
-  const [mealPlannerHeight, setMealPlannerHeight] = useState(200);
   const [mealState, setMealState] = useState<{
       id: number | undefined; title: string; date: Date | undefined | null; type: string;
   }>({
@@ -50,7 +49,7 @@ export default function MealPlanner() {
     setUniqueMealsDatabase(uniqueMealsDB);
     // get meals for this week
     const startDate = shownWeek;
-    const endDate = new Date(new Date(new Date().setDate(new Date().getDate() + (6 - new Date().getDay()))).setHours(23,59));
+    const endDate = new Date(new Date(new Date().setDate(new Date(startDate).getDate() + (6 - new Date(startDate).getDay()))).setHours(23,59));
     const currentWeekMealState: { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } } = {} as { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } };
     // create 7 needed date keys
     const weekDateStrings = getWeekDateStrings(startDate);
@@ -76,10 +75,6 @@ export default function MealPlanner() {
     setWeekMealState(currentWeekMealState);
   }, [shownWeek]);
   useEffect(() => {
-    const mealPlannerTop = document.getElementsByClassName('mealPlannerToolParent')[0].getBoundingClientRect().top;
-    const plannerToolHeight = window.innerHeight - mealPlannerTop - 10;
-    setMealPlannerHeight(plannerToolHeight);
-
     if(window.innerWidth <= 768){
       setDayCount(1);
     } else {
@@ -93,7 +88,6 @@ export default function MealPlanner() {
         <MealPlannerTool
           meals={weekMealState}
           dayCount={dayCount}
-          mealPlannerHeight={mealPlannerHeight}
           shownWeek={shownWeek}
           setShownWeek={setShownWeek}
           setShowModal={setShowModal}
@@ -110,7 +104,7 @@ export default function MealPlanner() {
         )}
         {showEditModal && createPortal(
           <EditMealModal
-            mealDatabase={mealDatabase}
+            uniqueMealsDatabase={uniqueMealsDatabase}
             showEditModal={showEditModal}
             setShowEditModal={setShowEditModal}
           />,

@@ -9,17 +9,17 @@ import {localeFormat} from 'light-date';
 type EditMealModalProps = {
     showEditModal: boolean;
     setShowEditModal: (showEditModal:boolean) => void;
-    mealDatabase: {label: string, value: Meal}[];
+    uniqueMealsDatabase: {label: string, value: Meal}[];
 };
 
-export default function EditMealModal({showEditModal,setShowEditModal,mealDatabase}:EditMealModalProps){
+export default function EditMealModal({showEditModal,setShowEditModal,uniqueMealsDatabase}:EditMealModalProps){
     const [commandInputValue, setCommandInputValue] = useState("");
     const {
         mealState,
     } = useContext(MealContext);
 
     const [selectedMeal, setSelectedMeal] = useState<{label: string, value: Meal} | null>(
-        mealState ? mealDatabase.find((meal)=>meal.value.id === mealState.id)||null : null
+        mealState ? uniqueMealsDatabase.find((meal)=>meal.value.id === mealState.id)||null : null
     );
 
     const submitModal = () => {
@@ -40,7 +40,7 @@ export default function EditMealModal({showEditModal,setShowEditModal,mealDataba
         <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div className="flex min-h-full justify-center p-4 text-center items-center sm:p-0">
                     <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                             <div className="sm:flex sm:items-start">
@@ -50,7 +50,7 @@ export default function EditMealModal({showEditModal,setShowEditModal,mealDataba
                                 </svg>
                                 </div>
                                 <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {localeFormat(new Date(mealState?.date||new Date()),"{EEEE}")} {mealState.type}</h3>
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {localeFormat(new Date(mealState?.date||new Date()),"{EEEE}")} {mealState.type.charAt(0).toUpperCase() + mealState.type.slice(1)}</h3>
                                     <div className="mt-2">
                                         <MealCombobox
                                             addNewText="Submit Update"
@@ -59,7 +59,7 @@ export default function EditMealModal({showEditModal,setShowEditModal,mealDataba
                                             commandInputValue={commandInputValue}
                                             setCommandInputValue={setCommandInputValue}
                                             submitMeal={updateMeal}
-                                            meals={mealDatabase}
+                                            meals={uniqueMealsDatabase}
                                         />
                                     </div>
                                 </div>

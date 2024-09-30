@@ -25,7 +25,7 @@
     "date-fns": "2.30.0",
     "dexie": "^4.0.8",
     "dexie-react-hooks": "^1.1.7",
-    "embla-carousel-react": "^8.1.8",
+    "embla-carousel-react": "^8.3.0",
     "light-date": "^1.2.0",
     "lucide-react": "^0.428.0",
     "next": "latest",
@@ -36,6 +36,6 @@
     "tailwindcss": "^3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.1.6",
-    "vaul": "^0.9.3"
+    "vaul": "^0.9.9"
   }
 }

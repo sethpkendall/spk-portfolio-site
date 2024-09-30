@@ -10,7 +10,7 @@ export function getWeekDateStrings(startDate:Date){
     let currentDateString;
     let weekDateStrings = [];
     for (let i = 0; i < 7; i++) {
-      currentDate = new Date(new Date().setDate(startDate.getDate() + i));
+      currentDate = new Date(new Date(startDate.getTime()).setDate(startDate.getDate() + i));
       currentDateString = `${currentDate.getMonth()+1}-${currentDate.getDate()}-${currentDate.getFullYear()}`
       weekDateStrings.push(currentDateString);
     }
