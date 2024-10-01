@@ -15,12 +15,23 @@ export default function WeekPager ({shownWeek,setShownWeek}:WeekPagerProps): JSX
     const priorWeekStart = new Date(new Date(shownWeek).setDate(shownWeek.getDate() - 7));
     const nextWeekStart = new Date(new Date(shownWeek).setDate(shownWeek.getDate() + 7));
 
+    const pagerDateRange = () => {
+        let dateRangeString = localeFormat(shownWeek,"{MMMM}");
+        dateRangeString = dateRangeString.concat(` ${format(shownWeek,"{dd}")} - `);
+        console.log(format(shownWeek,"{MMMM}") != format(shownWeekEnd,"{MMMM}"));
+        if (shownWeek.getMonth() !== shownWeekEnd.getMonth()) {
+            dateRangeString = dateRangeString.concat(`${localeFormat(shownWeekEnd,"{MMMM}")} `);
+        }
+        dateRangeString = dateRangeString.concat(format(shownWeekEnd, "{dd}"));
+        return dateRangeString;
+    }
+
     return (
         <div className='flex justify-center items-center '>
             <Button variant="default" onClick={()=>setShownWeek(priorWeekStart)}>
                 <ChevronLeftCircle/>
             </Button>
-            <p className="mx-4">{localeFormat(shownWeek,"{MMMM}")} {format(shownWeek,"{dd}")} - {format(shownWeekEnd, "{dd}")}</p>
+            <p className="mx-4 font-bold">{pagerDateRange()}</p>
             <Button variant="default" onClick={()=>setShownWeek(nextWeekStart)}>
                 <ChevronRightCircle/>
             </Button>

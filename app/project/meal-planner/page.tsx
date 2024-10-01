@@ -38,13 +38,15 @@ export default function MealPlanner() {
     // store all meals in state
     const allMeals = await db.meals.toArray();
     const allMealsDB:{label:string,value:Meal}[] = [];
-    const uniqueMealsDB:{label:string,value:Meal}[] = [];
+    let uniqueMealsDB:{label:string,value:Meal}[] = [];
     allMeals.forEach((meal) => {
       allMealsDB.push({label: meal.title, value: meal});
       if(!uniqueMealsDB.some((dbMeal) => dbMeal.label === meal.title)) {
         uniqueMealsDB.push({label: meal.title, value: meal});
       }
     });
+    // alphabetize uniqueMealsDB
+    uniqueMealsDB = uniqueMealsDB.sort((a, b) => a.label.localeCompare(b.label));
     setMealDatabase(allMealsDB);
     setUniqueMealsDatabase(uniqueMealsDB);
     // get meals for this week

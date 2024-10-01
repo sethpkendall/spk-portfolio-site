@@ -16,13 +16,19 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
         null
     );
     const [commandInputValue, setCommandInputValue] = useState("");
+    const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
     const {
         mealState
       } = useContext(MealContext);
 
     const submitMeal = async () => {
+        if(!selectedMeal) {
+            setFeedbackMsgState("Please select a meal or type a new meal name.");
+            setTimeout(()=>setFeedbackMsgState(null),3000);
+            return;
+        }
         await db.meals.add({
-            title: selectedMeal?.label || '',
+            title: selectedMeal?.label.trim() || '',
             date: mealState.date || undefined,
             type: mealState.type
         });
@@ -31,7 +37,7 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
 
     const submitNewMeal = async (typedValue:string) => {
         await db.meals.add({
-            title: typedValue,
+            title: typedValue.trim(),
             date: mealState.date || undefined,
             type: mealState.type
         });
@@ -66,6 +72,9 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className="addMealFeedback">
+                            {feedbackMsgState && <p className="text-red-500 font-bold text-sm text-center p-3">{feedbackMsgState}</p>}
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button onClick={()=>submitMeal()} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Submit</button>
