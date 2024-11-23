@@ -12,6 +12,7 @@ const POST_GRAPHQL_FIELDS = `
     }
   }
   excerpt
+  lessons
   content {
     json
     links {
