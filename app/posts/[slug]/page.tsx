@@ -56,8 +56,12 @@ export default async function PostPage({
           </div>
         </div>
       </article>
-      <hr className="border-accent-2 mt-28 mb-24" />
-      <LessonCycler lessons={post.lessons} />
+      {post.lessons && (
+        <>
+          <hr className="border-accent-2 mt-28 mb-24" />
+          <LessonCycler lessons={post.lessons} />
+        </>
+      )}
       <hr className="border-accent-2 mt-28 mb-24" />
       <MoreStories morePosts={morePosts} />
     </div>
