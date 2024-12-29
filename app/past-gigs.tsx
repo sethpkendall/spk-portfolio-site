@@ -4,16 +4,12 @@ import CoverImage from "./cover-image";
 function PastGigTile({
     title,
     coverImage,
-    date,
     excerpt,
-    author,
     slug,
   }: {
     title: string;
     coverImage: any;
-    date: string;
     excerpt: string;
-    author: any;
     slug: string;
   }) {
     return (
