@@ -37,9 +37,7 @@ export default function MealPlannerTool(
     setShownWeek,
     shownWeek}:MealPlannerToolProps): JSX.Element{
     const weekDateStrings = getWeekDateStrings(shownWeek);
-    useEffect(() => {
-        console.log(shownWeek);
-    }, [shownWeek]);
+    
     let componentToRender;
     switch (dayCount) {
         case 0:

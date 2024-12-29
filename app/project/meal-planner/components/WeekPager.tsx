@@ -18,7 +18,6 @@ export default function WeekPager ({shownWeek,setShownWeek}:WeekPagerProps): JSX
     const pagerDateRange = () => {
         let dateRangeString = localeFormat(shownWeek,"{MMMM}");
         dateRangeString = dateRangeString.concat(` ${format(shownWeek,"{dd}")} - `);
-        console.log(format(shownWeek,"{MMMM}") != format(shownWeekEnd,"{MMMM}"));
         if (shownWeek.getMonth() !== shownWeekEnd.getMonth()) {
             dateRangeString = dateRangeString.concat(`${localeFormat(shownWeekEnd,"{MMMM}")} `);
         }
