@@ -5,7 +5,7 @@ import { PlusIcon } from '@radix-ui/react-icons'
 import { Meal } from '@/models/interfaces';
 import { MealContext } from '@/contexts/MealContext';
 import { Pencil, Trash2Icon } from 'lucide-react';
-import { db } from '@/models/db';
+import { mpDB } from '@/models/db';
 
 type MealGridPanelProps = {
     meal:Meal;
@@ -38,7 +38,7 @@ export default function MealGridPanel({dayString, meal, mealType, setShowEditMod
     }
 
     const deleteClick = async (meal:Meal) => {
-        await db.meals.delete(meal.id || 0);
+        await mpDB.meals.delete(meal.id || 0);
     }
     
     return (

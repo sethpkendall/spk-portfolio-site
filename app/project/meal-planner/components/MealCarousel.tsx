@@ -9,7 +9,7 @@ import { Apple, Pencil, Trash2Icon } from 'lucide-react';
 import { MealContext } from '@/contexts/MealContext';
 import { Meal } from '@/models/interfaces';
 import {localeFormat} from 'light-date';
-import { db } from '@/models/db';
+import { mpDB } from '@/models/db';
 
 type MealCarouselProps = {
     meals: {
@@ -46,7 +46,7 @@ const MealCarousel: React.FC<MealCarouselProps> = ({meals,setShowEditModal,setSh
     }
 
     const deleteClick = async (meal:Meal) => {
-        await db.meals.delete(meal.id || 0);
+        await mpDB.meals.delete(meal.id || 0);
     }
 
     return (

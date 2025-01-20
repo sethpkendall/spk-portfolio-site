@@ -23,7 +23,10 @@ function Header() {
             Seth P. Kendall
           </h1>
         </Link>
-        <Link href="/project/meal-planner">meal planner</Link>
+        <div className="linksParent">
+          <Link href="/project/goal-keeper" className="m-2">goal keeper</Link>
+          <Link href="/project/meal-planner" className="m-2">meal planner</Link>
+        </div>
       </section>
     </div>
   );

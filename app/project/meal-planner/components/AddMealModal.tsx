@@ -2,7 +2,7 @@ import {useContext, useState} from 'react';
 import{ MealCombobox } from './MealCombobox';
 import { MealContext } from '@/contexts/MealContext';
 import { getWeekdayString } from '@/lib/utils';
-import { db } from '@/models/db';
+import { mpDB } from '@/models/db';
 import { Meal } from '@/models/interfaces';
 
 type AddMealModalProps = {
@@ -27,7 +27,7 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
             setTimeout(()=>setFeedbackMsgState(null),3000);
             return;
         }
-        await db.meals.add({
+        await mpDB.meals.add({
             title: selectedMeal?.label.trim() || '',
             date: mealState.date || undefined,
             type: mealState.type
@@ -36,7 +36,7 @@ export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase
     };
 
     const submitNewMeal = async (typedValue:string) => {
-        await db.meals.add({
+        await mpDB.meals.add({
             title: typedValue.trim(),
             date: mealState.date || undefined,
             type: mealState.type

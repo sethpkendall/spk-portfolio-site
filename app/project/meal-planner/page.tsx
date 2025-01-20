@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MealContext } from '@/contexts/MealContext';
 import { createPortal } from 'react-dom';
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "@/models/db";
+import { mpDB } from "@/models/db";
 import { start } from 'repl';
 import { getWeekDateStrings } from '@/lib/utils';
 import { set } from 'date-fns';
@@ -23,7 +23,6 @@ export default function MealPlanner() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [dayCount, setDayCount] = useState(0);
   const [weekMealState, setWeekMealState] = useState({});
-  const [mealDatabase, setMealDatabase] = useState<{ label: string; value: Meal; }[]>([]);
   const [uniqueMealsDatabase, setUniqueMealsDatabase] = useState<{ label: string; value: Meal; }[]>([]);
   const [mealState, setMealState] = useState<{
       id: number | undefined; title: string; date: Date | undefined | null; type: string;
@@ -36,7 +35,7 @@ export default function MealPlanner() {
 
   useLiveQuery(async () => {
     // store all meals in state
-    const allMeals = await db.meals.toArray();
+    const allMeals = await mpDB.meals.toArray();
     const allMealsDB:{label:string,value:Meal}[] = [];
     let uniqueMealsDB:{label:string,value:Meal}[] = [];
     allMeals.forEach((meal) => {
@@ -47,7 +46,6 @@ export default function MealPlanner() {
     });
     // alphabetize uniqueMealsDB
     uniqueMealsDB = uniqueMealsDB.sort((a, b) => a.label.localeCompare(b.label));
-    setMealDatabase(allMealsDB);
     setUniqueMealsDatabase(uniqueMealsDB);
     // get meals for this week
     const startDate = shownWeek;
@@ -63,7 +61,7 @@ export default function MealPlanner() {
       };
     }
     // iterate meal results
-    const meals = await db.meals.where("date").between(startDate, endDate, true, true).toArray();
+    const meals = await mpDB.meals.where("date").between(startDate, endDate, true, true).toArray();
     for(const meal of meals) {
       const mealDate = meal.date ? new Date(meal.date) : null;
       if(mealDate && mealDate >= startDate && mealDate < endDate) {

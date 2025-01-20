@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react';
 import{ MealCombobox } from './MealCombobox';
 import { MealContext } from '@/contexts/MealContext';
 import { getWeekdayString } from '@/lib/utils';
-import { db } from '@/models/db';
+import { mpDB } from '@/models/db';
 import { Meal } from '@/models/interfaces';
 import {localeFormat} from 'light-date';
 
@@ -27,7 +27,7 @@ export default function EditMealModal({showEditModal,setShowEditModal,uniqueMeal
     };
 
     const updateMeal = async (typedValue:string) => {
-        await db.meals.put({
+        await mpDB.meals.put({
             id: mealState.id,
             title: typedValue,
             date: mealState.date || undefined,
