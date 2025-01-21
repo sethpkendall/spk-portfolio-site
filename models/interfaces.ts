@@ -18,6 +18,7 @@ export interface Recipe {
 
 export interface Session {
     id?:number;
+    title:string;
     startDate:Date;
     endDate:Date;
     goals?:Goal[];
@@ -29,14 +30,14 @@ export interface Session {
 
 export interface Goal {
     id?:number;
-    label:string;
+    title:string;
     type: "stepUp" | "stepDown" | "countUp" | "countDown";
     baseLabel:string;
     baseValue:number;
     reachLabel:string;
     reachValue:number;
     countFrequency:"day" | "week" | "month" | "year";
-    Logs?:Log[];
+    logs?:Log[];
 }
 
 export interface Log {
