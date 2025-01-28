@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useLiveQuery } from "dexie-react-hooks";
 import { gkDB } from '@/models/db';
-import { Session } from '@/models/interfaces';
+import { Session, Goal, Log } from '@/models/interfaces';
 import SessionDetail from './SessionDetail';
 
 const SessionList: React.FC = () => {
-    const [sessions, setSessions] = useState<Session[]>([]);
-    useLiveQuery(async () => {
-        // store all meals in state
-        const allMeals = await gkDB.sessions.toArray();
-        setSessions(allMeals);
-    });
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  useLiveQuery(async () => {
+    // Fetch all sessions
+    const allSessions = await gkDB.sessions.toArray();
+
+    // Fetch goals and logs for each session
+    const sessionsWithDetails = await Promise.all(allSessions.map(async (session) => {
+      const goals = await gkDB.goals.where('id').anyOf(session.goals || []).toArray();
+      const goalsWithLogs = await Promise.all(goals.map(async (goal) => {
+        const logs = await gkDB.logs.where('id').anyOf(goal.logs || []).toArray();
+        return { ...goal, logs };
+      }));
+      return { ...session, goals: goalsWithLogs };
+    }));
+
+    setSessions(sessionsWithDetails);
+  });
 
   return (
     <div className="p-4">
