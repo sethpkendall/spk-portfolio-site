@@ -36,11 +36,16 @@ export class GoalKeeperDB extends Dexie {
 export const gkDB = new GoalKeeperDB();
 
 // mpDB.on('populate', mpPopulate);
-gkDB.on('populate', gkPopulate);
+// gkDB.on('populate', gkPopulate);
+resetDatabase();
 
 export function resetDatabase() {
-    return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
-        await Promise.all(mpDB.tables.map(table => table.clear()));
-        await mpPopulate();
+    // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
+    //     await Promise.all(mpDB.tables.map(table => table.clear()));
+    //     await mpPopulate();
+    // });
+    return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
+        await Promise.all(gkDB.tables.map(table => table.clear()));
+        await gkPopulate();
     });
 }

@@ -21,7 +21,7 @@ export interface Session {
     title:string;
     startDate:Date;
     endDate:Date;
-    goals?:Goal[];
+    goals?:number[];
     baseReward:string;
     baseRewardValue:number;
     reachReward:string;
@@ -36,11 +36,12 @@ export interface Goal {
     baseValue:number;
     reachLabel:string;
     reachValue:number;
-    countFrequency:"day" | "week" | "month" | "year";
-    logs?:Log[];
+    countFrequency:"day" | "week" | "month";
+    logs?:number[];
 }
 
 export interface Log {
     id?:number;
+    date:Date;
     value:number;
 }
