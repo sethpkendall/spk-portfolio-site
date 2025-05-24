@@ -21,7 +21,7 @@ export interface Session {
     title:string;
     startDate:Date;
     endDate:Date;
-    goals?:number[];
+    goals?:Goal[]|number[]|undefined;
     baseReward:string;
     baseRewardValue:number;
     reachReward:string;
@@ -31,13 +31,15 @@ export interface Session {
 export interface Goal {
     id?:number;
     title:string;
-    type: "stepUp" | "stepDown" | "countUp" | "countDown";
+    type: "stepUp" | "stepDown" | "countUp" | "countDown" | "";
+    unit: "hours"  | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts" | "";
     baseLabel:string;
     baseValue:number;
+    basePoints:number;
     reachLabel:string;
     reachValue:number;
-    countFrequency:"day" | "week" | "month";
-    logs?:number[];
+    countFrequency:"day" | "week" | "";
+    logs?:Log[]|number[];
 }
 
 export interface Log {

@@ -57,6 +57,13 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  .goalKeeperParent * {
+    --primary: 217 91.2% 59.8%;
+  }
+  .bg-primary{
+    --primary: 217 91.2% 59.8%;
+  }
 }
 
 @layer base {

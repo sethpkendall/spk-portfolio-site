@@ -37,7 +37,7 @@ export const gkDB = new GoalKeeperDB();
 
 // mpDB.on('populate', mpPopulate);
 // gkDB.on('populate', gkPopulate);
-resetDatabase();
+resetDatabase();    
 
 export function resetDatabase() {
     // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
