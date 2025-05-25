@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { gkPopulate, mpPopulate } from './populate';
+// import { gkPopulate, mpPopulate } from './populate';
 import { Meal, Food, Recipe, Session, Goal, Log } from './interfaces';
 
 
