@@ -39,13 +39,13 @@ export const gkDB = new GoalKeeperDB();
 // gkDB.on('populate', gkPopulate);
 // resetDatabase();    
 
-export function resetDatabase() {
-    // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
-    //     await Promise.all(mpDB.tables.map(table => table.clear()));
-    //     await mpPopulate();
-    // });
-    return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
-        await Promise.all(gkDB.tables.map(table => table.clear()));
-        await gkPopulate();
-    });
-}
+// export function resetDatabase() {
+//     // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
+//     //     await Promise.all(mpDB.tables.map(table => table.clear()));
+//     //     await mpPopulate();
+//     // });
+//     return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
+//         await Promise.all(gkDB.tables.map(table => table.clear()));
+//         await gkPopulate();
+//     });
+// }
