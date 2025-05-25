@@ -26,18 +26,25 @@ export default function GoalPicker({goals, selectedGoal, setSelectedGoal, setSho
 
     return (
         <div id="goalPickerParent" className="m-4 flex space-x-2">
-            {goals.map(goal => (
-                <Badge
-                    key={goal.id}
-                    variant={selectedGoal?.id === goal.id ? 'default' : 'outline'}
-                    onClick={() => handleValueChange(goal)}
-                    className={`cursor-pointer transition-transform duration-300 ${
-                        selectedGoal?.id === goal.id ? 'scale-110 shadow-lg' : 'scale-100'
-                    }`}
-                >
-                    {goal.title}
-                </Badge>
-            ))}
+            {Array.isArray(goals) && goals.map(goal => {
+                // Support both Goal[] and number[] for goals prop
+                if (typeof goal === "number") {
+                    // If goal is a number, skip rendering (or handle as needed)
+                    return null;
+                }
+                return (
+                    <Badge
+                        key={goal.id}
+                        variant={selectedGoal?.id === goal.id ? 'default' : 'outline'}
+                        onClick={() => handleValueChange(goal)}
+                        className={`cursor-pointer transition-transform duration-300 ${
+                            selectedGoal?.id === goal.id ? 'scale-110 shadow-lg' : 'scale-100'
+                        }`}
+                    >
+                        {goal.title}
+                    </Badge>
+                );
+            })}
             {selectedGoal && (
                 <Badge
                     variant="default"

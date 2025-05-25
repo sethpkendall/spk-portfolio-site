@@ -32,7 +32,9 @@ export default function LogEntryForm({goalType, goalId, goalUnit, logs, addedLog
                 value: countUpInputState,
             };
             const logId = await gkDB.logs.add(logEntry);
-            setAddedLogs([...addedLogs, logId]);
+            if (setAddedLogs && addedLogs) {
+                setAddedLogs([...addedLogs, logId]);
+            }
             if (goalId) {
                 gkDB.goals.update(goalId, {
                     logs: [...(logIdsState || []), logId],
@@ -47,7 +49,9 @@ export default function LogEntryForm({goalType, goalId, goalUnit, logs, addedLog
                 value: 1,
             };
             const logId = await gkDB.logs.add(logEntry);
-            setAddedLogs([...addedLogs, logId]);
+            if (setAddedLogs && addedLogs) {
+                setAddedLogs([...addedLogs, logId]);
+            }
             if (goalId) {
                 gkDB.goals.update(goalId, {
                     logs: [...(logIdsState || []), logId],
