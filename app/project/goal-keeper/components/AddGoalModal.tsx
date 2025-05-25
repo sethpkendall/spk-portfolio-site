@@ -17,7 +17,7 @@ import {
   } from "@/components/ui/select"
 // database
 import { gkDB } from '@/models/db';
-import { Session as GoalKeeperSession } from '@/models/interfaces';
+import { Session as GoalKeeperSession, Goal } from '@/models/interfaces';
 
 type AddGoalModalProps = {
     setShowModal: (showModal:boolean) => void;
@@ -82,7 +82,7 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
       };
 
     const submitGoal = async () => {
-        if(!valildateAddGoal()) {
+        if(!validateAddGoal()) {
             setFeedbackMsgState("Please fill all required fields.");
             setTimeout(()=>setFeedbackMsgState(null),3000);
             return;
@@ -96,20 +96,20 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
             reachLabel: formState.reachLabel,
             reachValue: Number(formState.reachValue),
             countFrequency: formState.countFrequency,
-            basePoints: formState.basePoints,
+            basePoints: Number(formState.basePoints),
         });
         let sessionGoals: number[] = [];
         if(selectedSession?.goals){
-            sessionGoals = selectedSession.goals.map(goal=>goal.id);
+            sessionGoals = (selectedSession.goals as Goal[]).map((goal: Goal) => goal.id as number);
         }
         gkDB.sessions.update(selectedSession?.id as number, {
             goals: [...(sessionGoals || []), goalId]
         });
-        setAddedGoals([...addedGoals, goalId]);
+        setAddedGoals([...addedGoals, goalId as number]);
         setShowModal(false);
     };
 
-    const valildateAddGoal = () => {
+    const validateAddGoal = () => {
         const errors:string[] = [];
         Object.keys(formState).forEach((key)=>{
             if(!formState[key as keyof typeof formState]){
@@ -244,7 +244,6 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
                                                 <div className="valueSection w-1/4">
                                                     <Label htmlFor="reachValue">Value</Label>
                                                     <Input
-                                                        className=''
                                                         type="number"
                                                         name="reachValue"
                                                         value={formState.reachValue}
