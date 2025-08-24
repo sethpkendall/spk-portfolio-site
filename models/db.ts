@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-// import { gkPopulate, mpPopulate } from './populate';
+import { gkPopulate, mpPopulate } from './populate';
 import { Meal, Food, Recipe, Session, Goal, Log } from './interfaces';
 
 
@@ -27,7 +27,7 @@ export class GoalKeeperDB extends Dexie {
         super('GoalKeeperDB');
         this.version(3).stores({
             sessions: '++id, title, startDate, endDate, goals, baseReward, baseRewardValue, reachReward, reachRewardValue',
-            goals: '++id, title, type, baseLabel, baseValue, reachLabel, reachValue, countFrequency, logs',
+            goals: '++id, title, type, unit, baseLabel, baseValue, basePoints, reachLabel, reachValue, countFrequency, logs',
             logs: '++id, value'
         });
     }
@@ -37,15 +37,15 @@ export const gkDB = new GoalKeeperDB();
 
 // mpDB.on('populate', mpPopulate);
 // gkDB.on('populate', gkPopulate);
-// resetDatabase();    
+resetDatabase();    
 
-// export function resetDatabase() {
+export function resetDatabase() {
 //     // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
 //     //     await Promise.all(mpDB.tables.map(table => table.clear()));
 //     //     await mpPopulate();
 //     // });
-//     return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
-//         await Promise.all(gkDB.tables.map(table => table.clear()));
-//         await gkPopulate();
-//     });
-// }
+    return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
+        await Promise.all(gkDB.tables.map(table => table.clear()));
+        await gkPopulate();
+    });
+}

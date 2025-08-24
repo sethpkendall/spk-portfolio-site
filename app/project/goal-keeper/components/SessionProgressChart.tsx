@@ -36,93 +36,64 @@ const processGoalDataForChart = (goals: Goal[], dateRangePointTotals: {[key:stri
                     pointTotalsPerDay[date] += goal.basePoints;
                 }
             });
-            Object.keys(dateRangePointTotals).forEach((dateRange) => {
-                const dateRangeDailyPointValues = [] as number[];
-                const dateRangeStrings = [] as string[];
-                const [startDateStr, endDateStr] = dateRange.split(' - ');
-                // Parse the dateRange string
-                if (startDateStr === endDateStr) {
-                    // This is a single day
-                    dateRangeStrings.push(dateRange);
+            Object.keys(dateRangePointTotals).forEach((date) => {
+                if( !pointTotalsPerDay[date]) {
+                    dateRangePointTotals[date] += 0;
                 } else {
-                    // This is a week range
-                    
-                    const startOfRange = new Date(startDateStr);
-                    const endOfRange = new Date(endDateStr);
-                    
-                    // Loop through each day in the range
-                    for (let day = new Date(startOfRange); day <= endOfRange; day.setDate(day.getDate() + 1)) {
-                        const dayString = day.toLocaleDateString();
-                        dateRangeStrings.push(dayString);
-                    }
+                    dateRangePointTotals[date] += (pointTotalsPerDay[date]/7);
                 }
-                dateRangeStrings.forEach((date) => {
-                    const pointTotal = pointTotalsPerDay[date] || 0;
-                    dateRangeDailyPointValues.push(pointTotal);
-                });
-                const dateRangeAverage = dateRangeDailyPointValues.reduce((sum, value) => sum + value, 0) / dateRangeDailyPointValues.length;
-                const dateRangeAverageRounded = Math.round(dateRangeAverage * 10) / 10;
-                dateRangePointTotals[dateRange] += dateRangeAverageRounded;
             });
         } else if (goal.countFrequency === 'week') {
-            const summedlogValueByWeek = {} as {[key:string]:number};
-            // for each week, calculate the total value of logs
-            Object.keys(dateRangePointTotals).forEach(weekRange => {
-                const [startOfWeek, endOfWeek] = weekRange.split(' - ').map(date => new Date(date));
-                // filter down to relevant logs
+            // Get all the date keys sorted chronologically
+            const allDates = Object.keys(dateRangePointTotals)
+                .map(dateStr => new Date(dateStr))
+                .sort((a, b) => a.getTime() - b.getTime());
+
+            // Iterate through the dates in chunks of 7 (weeks)
+            for (let i = 0; i < allDates.length; i += 7) {
+                const weekDates = allDates.slice(i, i + 7);
+                if (weekDates.length === 0) continue;
+
+                // Get the string representations for lookup
+                const weekDateStrings = weekDates.map(d => d.toLocaleDateString());
+
+                // Filter logs that fall within this week
                 const logsForWeek = (goal.logs as Log[])?.filter(log => {
-                    const logDate = new Date(log.date);
-                    return logDate >= startOfWeek && logDate <= endOfWeek;
+                    const logDateStr = new Date(log.date).toLocaleDateString();
+                    return weekDateStrings.includes(logDateStr);
                 }) || [];
-                // sum weekly log values
+
+                // Sum log values for the week
                 const summedLogValues = logsForWeek.reduce((sum, log) => sum + log.value, 0);
-                // instantiate weekRange key if not defined
-                if(!summedlogValueByWeek[weekRange]){
-                    summedlogValueByWeek[weekRange] = 0;
-                }
-                // assign points based on log values
+
+                // Assign points to each day in the week
+                let points = 0;
                 if (summedLogValues >= goal.reachValue) {
-                    summedlogValueByWeek[weekRange] += 10;
+                    points = 10;
                 } else if (summedLogValues >= goal.baseValue) {
-                    summedlogValueByWeek[weekRange] += goal.basePoints;
+                    points = goal.basePoints;
                 }
-            });
-            Object.keys(summedlogValueByWeek).forEach((date) => {
-                const logValue = summedlogValueByWeek[date];
-                if (logValue >= goal.reachValue) {
-                    dateRangePointTotals[date] += 10;
-                } else if (logValue >= goal.baseValue) {
-                    dateRangePointTotals[date] += goal.basePoints;
-                }
-            });
+
+                // Add the weekly points to each day in the week
+                weekDateStrings.forEach(dateStr => {
+                    dateRangePointTotals[dateStr] += points;
+                });
+            }
         }
     });
 }
 
 export default function SessionProgressChart({goals,startDate,endDate}:SessionProgressChartProps): JSX.Element{
-    // determine data point groupings based on session length
     // Generate the full date range from startDate to endDate
     const dateRange = [] as string[];
     const totalDuration = endDate.getTime() - startDate.getTime();
     const oneDay = 24 * 60 * 60 * 1000;
     const oneWeek = 7 * oneDay;
-
-    if (totalDuration <= 31 * oneDay) {
-        // Populate dateRange by day
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            dateRange.push(new Date(d).toLocaleDateString());
-        }
-    } else {
-        // Populate dateRange by week
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 7)) {
-            const startOfWeek = new Date(d);
-            const endOfWeek = new Date(d);
-            endOfWeek.setDate(endOfWeek.getDate() + 6);
-            if (endOfWeek > endDate) endOfWeek.setTime(endDate.getTime());
-            dateRange.push(`${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`);
-        }
+    // Populate dateRange by day
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        dateRange.push(new Date(d).toLocaleDateString());
     }
-    // calculate points for each dateRange entry
+    // Create point totals for each date in the range
     const dateRangePointTotals = {} as {[key:string]:number};
     for (let item of dateRange) {
         dateRangePointTotals[item] = 0;

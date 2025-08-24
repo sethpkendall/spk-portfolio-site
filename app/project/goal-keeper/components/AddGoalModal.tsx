@@ -24,26 +24,38 @@ type AddGoalModalProps = {
     selectedSession: GoalKeeperSession | null;
     addedGoals: number[];
     setAddedGoals: (addedGoals:number[]) => void;
+    goalToEdit?: Goal;
+    isEditMode?: boolean; 
 };
 
-export default function AddGoalModal({setShowModal, selectedSession, addedGoals, setAddedGoals}:AddGoalModalProps): JSX.Element{
+export default function AddGoalModal({setShowModal, selectedSession, addedGoals, setAddedGoals, goalToEdit, isEditMode}: AddGoalModalProps): JSX.Element {
     const [formState, setFormState] = useState({
-            title: '',
-            type: '' as "stepUp" | "stepDown" | "countUp" | "countDown" | "",
-            unit: '' as "hours"  | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts" | "",
-            baseLabel: '',
-            basePoints: 5,
-            baseValue: 0,
-            reachLabel: '',
-            reachValue: 0,
-            countFrequency: '' as "day" | "week" | ""
-        });
-    const [goalTypeLabelState, setGoalTypeLabelState] = useState<string>('Select Goal Type');
-    const [goalTypeDescriptionState, setGoalTypeDescriptionState] = useState<string>('There are 2 types of goals to track.');
+        title: goalToEdit?.title || '',
+        type: (goalToEdit?.type as "stepUp" | "stepDown" | "countUp" | "countDown" | "") || '',
+        unit: (goalToEdit?.unit as "hours"  | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts" | "") || '',
+        basePoints: goalToEdit?.basePoints ?? 5,
+        baseValue: goalToEdit?.baseValue ?? 0,
+        reachValue: goalToEdit?.reachValue ?? 0,
+        countFrequency: (goalToEdit?.countFrequency as "day" | "week" | "") || '',
+    });
+    const [goalTypeLabelState, setGoalTypeLabelState] = useState<string>(goalToEdit ? (goalToEdit.type === 'countUp' ? 'Sum Up' : goalToEdit.type === 'stepUp' ? 'Count Up' : goalToEdit.type === 'countDown' ? 'Deduct Values' : goalToEdit.type === 'stepDown' ? 'Count Down' : 'Select Goal Type') : 'Select Goal Type');
+    const [goalTypeDescriptionState, setGoalTypeDescriptionState] = useState<string>(goalToEdit ? (goalToEdit.type === 'countUp' ? 'Record progress by summing logged amounts' : goalToEdit.type === 'stepUp' ? 'Record progress by counting up to a target' : goalToEdit.type === 'countDown' ? 'Track usage by subtracting logged amounts' : goalToEdit.type === 'stepDown' ? 'Track progress by counting down.' : 'There are 2 types of goals to track.') : 'There are 2 types of goals to track.');
     const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
     const [formInputErrorState, setFormInputErrorState] = useState<string[]>([]);
 
-    useEffect(() => {}, [formState]);
+    useEffect(() => {
+        if (goalToEdit) {
+            setFormState({
+                title: goalToEdit.title || '',
+                type: (goalToEdit.type as "stepUp" | "stepDown" | "countUp" | "countDown" | "") || '',
+                unit: (goalToEdit.unit as "hours"  | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts" | "") || '',
+                basePoints: goalToEdit.basePoints ?? 5,
+                baseValue: goalToEdit.baseValue ?? 0,
+                reachValue: goalToEdit.reachValue ?? 0,
+                countFrequency: (goalToEdit.countFrequency as "day" | "week" | "") || '',
+            });
+        }
+    }, [goalToEdit]);
 
     const handleTypeChange = (value: "stepUp" | "stepDown" | "countUp" | "countDown" | "") => {
         if(formInputErrorState.includes('type')){
@@ -87,23 +99,92 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
             setTimeout(()=>setFeedbackMsgState(null),3000);
             return;
         }
+        if (isEditMode && goalToEdit && goalToEdit.id != undefined) {
+            // Update existing goal
+            await gkDB.goals.update(goalToEdit.id, {
+                title: formState.title.trim(),
+                type: formState.type as "stepUp" | "stepDown" | "countUp" | "countDown" | "",
+                unit: formState.unit as "" | "hours" | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts",
+                baseLabel: "Base Goal",
+                baseValue: Number(formState.baseValue),
+                basePoints: Number(formState.basePoints),
+                reachLabel: "Reach Goal",
+                reachValue: Number(formState.reachValue),
+                countFrequency: formState.countFrequency as "day" | "week" | ""
+            });
+            // Recalculate session reward values if session and goals exist
+            if (selectedSession && selectedSession.goals) {
+                const diffTime = selectedSession ? Math.abs(selectedSession.endDate.getTime() - selectedSession.startDate.getTime()) : 0;
+                const sessionLengthWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+                let baseRewardValue = 0;
+                let reachRewardValue = 0;
+                // Use updated values for the edited goal
+                const updatedGoals = (selectedSession.goals as Goal[]).map((g) => {
+                    if (typeof g === 'number') return g;
+                    if (g.id === goalToEdit.id) {
+                        return {
+                            ...g,
+                            basePoints: Number(formState.basePoints),
+                        };
+                    }
+                    return g;
+                });
+                updatedGoals.forEach((g) => {
+                    if (typeof g !== 'number') {
+                        baseRewardValue += (g.basePoints * sessionLengthWeeks);
+                        reachRewardValue += (10 * sessionLengthWeeks);
+                    }
+                });
+                gkDB.sessions.update(selectedSession.id as number, {
+                    baseRewardValue,
+                    reachRewardValue,
+                });
+            }
+            // Reset modal state to ensure fresh info next time
+            setFormState({
+                title: '',
+                type: '',
+                unit: '',
+                basePoints: 5,
+                baseValue: 0,
+                reachValue: 0,
+                countFrequency: '',
+            });
+            setGoalTypeLabelState('Select Goal Type');
+            setGoalTypeDescriptionState('There are 2 types of goals to track.');
+            setShowModal(false);
+            return;
+        }
         const goalId = await gkDB.goals.add({
             title: formState.title.trim(),
-            type: formState.type,
-            unit: formState.unit,
-            baseLabel: formState.baseLabel,
+            type: formState.type as "stepUp" | "stepDown" | "countUp" | "countDown" | "",
+            unit: formState.unit as "" | "hours" | "minutes" | "miles" | "kilometers" | "ounces" | "pounds" | "kilograms" | "calories" | "times" | "workouts",
+            baseLabel: "Base Goal",
             baseValue: Number(formState.baseValue),
-            reachLabel: formState.reachLabel,
+            reachLabel: "Reach Goal",
             reachValue: Number(formState.reachValue),
-            countFrequency: formState.countFrequency,
+            countFrequency: formState.countFrequency as "day" | "week" | "",
             basePoints: Number(formState.basePoints),
         });
         let sessionGoals: number[] = [];
         if(selectedSession?.goals){
             sessionGoals = (selectedSession.goals as Goal[]).map((goal: Goal) => goal.id as number);
         }
+        // recalculate the baseRewardValue and reachRewardValue with newly added goal
+        const diffTime = selectedSession ? Math.abs(selectedSession.endDate.getTime() - selectedSession.startDate.getTime()) : 0;
+        // get total session length in weeks
+        const sessionLengthWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+        // calculate the baseRewardValue and reachRewardValue based on the number of weeks
+        let baseRewardValue = formState.basePoints;
+        let reachRewardValue = 10;
+        (selectedSession?.goals as Goal[] | undefined)?.forEach((value: Goal) => {
+            baseRewardValue += (value.basePoints * sessionLengthWeeks);
+            reachRewardValue += (10 * sessionLengthWeeks);
+        });
         gkDB.sessions.update(selectedSession?.id as number, {
-            goals: [...(sessionGoals || []), goalId]
+            goals: [...(sessionGoals || []), goalId],
+            baseRewardValue: baseRewardValue,
+            reachRewardValue: reachRewardValue
         });
         setAddedGoals([...addedGoals, goalId as number]);
         setShowModal(false);
@@ -190,7 +271,7 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
                                             }
                                             setFormState({...formState, unit: value as any})
                                         }}>
-                                            <SelectTrigger className={`w-full ${formInputErrorState.includes('unit') ? 'border-red-500' : ''}`}>
+                                            <SelectTrigger className={`w-full mb-4 ${formInputErrorState.includes('unit') ? 'border-red-500' : ''}`}>
                                                 <SelectValue placeholder="Select a unit" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -206,53 +287,22 @@ export default function AddGoalModal({setShowModal, selectedSession, addedGoals,
                                                 <SelectItem value="workouts">Workouts</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <div className='goalValuesParent flex flex-col gap-2 mb-4'>
-                                            <div className="baseRow flex flex-row items-center gap-4">
-                                                <div className="labelSection flex-grow">
-                                                    <Label htmlFor="baseLabel">Base Goal</Label>
-                                                    <Input
-                                                        type="text"
-                                                        name="baseLabel"
-                                                        value={formState.baseLabel}
-                                                        className={`${formInputErrorState.includes('baseLabel') ? 'border-red-500' : ''}`}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div className="valueSection w-1/4">
-                                                    <Label htmlFor="baseValue">Value</Label>
-                                                    <Input
-                                                        type="number"
-                                                        name="baseValue"
-                                                        value={formState.baseValue}
-                                                        className={`${formInputErrorState.includes('baseValue') ? 'border-red-500' : ''}`}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="reachRow flex flex-row items-center gap-4">
-                                                <div className="labelSection flex-grow">
-                                                    <Label htmlFor="reachLabel">Reach Goal</Label>
-                                                    <Input
-                                                        type="text"
-                                                        name="reachLabel"
-                                                        value={formState.reachLabel}
-                                                        className={`${formInputErrorState.includes('reachLabel') ? 'border-red-500' : ''}`}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div className="valueSection w-1/4">
-                                                    <Label htmlFor="reachValue">Value</Label>
-                                                    <Input
-                                                        type="number"
-                                                        name="reachValue"
-                                                        value={formState.reachValue}
-                                                        className={`${formInputErrorState.includes('reachValue') ? 'border-red-500' : ''}`}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <Label htmlFor="baseValue">Base Goal Value</Label>
+                                        <Input
+                                            type="number"
+                                            name="baseValue"
+                                            value={formState.baseValue}
+                                            className={`${formInputErrorState.includes('baseValue') ? 'border-red-500' : ''} mb-4`}
+                                            onChange={handleChange}
+                                        />
+                                        <Label htmlFor="reachValue">Reach Goal Value</Label>
+                                        <Input
+                                            type="number"
+                                            name="reachValue"
+                                            value={formState.reachValue}
+                                            className={`${formInputErrorState.includes('reachValue') ? 'border-red-500' : ''} mb-4`}
+                                            onChange={handleChange}
+                                        />
                                         <Label htmlFor="basePoints">Base Goal Points</Label>
                                         <div className='basePointSliderParent my-4'>
                                             <p className='currentBasePoints text-center mb-4'>{`${formState.basePoints*10}%`}</p>

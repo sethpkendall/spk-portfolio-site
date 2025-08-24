@@ -32,7 +32,8 @@ const PastWeekChart: React.FC<PastWeekChartProps> = ({ logs, baseLabel, baseValu
         if (logs && logs.length > 0) {
             logs.forEach(log => {
             const logDate = new Date(log.date);
-            const diffTime = today.getTime() - logDate.getTime();
+            logDate.setHours(0, 0, 0, 0); // Normalize log date to midnight
+            const diffTime = today.setHours(0, 0, 0, 0) - logDate.getTime(); // Compare from midnight to midnight
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
             if (diffDays < 7 && diffDays >= 0) {

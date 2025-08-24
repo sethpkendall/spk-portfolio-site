@@ -4,43 +4,43 @@ export async function gkPopulate() {
     const workoutLogIds: number[] = [];
     const workoutLogTestingData = [
         {
-            date: new Date("4/3/2025"),
+            date: new Date("7/1/2025"),
             value: 1
         },
         {
-            date: new Date("4/3/2025"),
+            date: new Date("7/3/2025"),
             value: 1
         },
         {
-            date: new Date("4/4/2025"),
+            date: new Date("7/4/2025"),
             value: 1
         },
         {
-            date: new Date("4/4/2025"),
+            date: new Date("7/4/2025"),
             value: 1
         },
         {
-            date: new Date("4/5/2025"),
+            date: new Date("7/5/2025"),
             value: 1
         },
         {
-            date: new Date("4/6/2025"),
+            date: new Date("7/6/2025"),
             value: 1
         },
         {
-            date: new Date("4/7/2025"),
+            date: new Date("7/7/2025"),
             value: 1
         },
         {
-            date: new Date("4/7/2025"),
+            date: new Date("7/7/2025"),
             value: 1
         },
         {
-            date: new Date("4/8/2025"),
+            date: new Date("7/8/2025"),
             value: 1
         },
         {
-            date: new Date("4/9/2025"),
+            date: new Date("7/9/2025"),
             value: 1
         }
     ];
@@ -64,43 +64,43 @@ export async function gkPopulate() {
     const codingLogIds: number[] = [];
     const codingLogTestingData = [
         {
-            date: new Date("4/1/2025"),
+            date: new Date("7/1/2025"),
             value: 30
         },
         {
-            date: new Date("4/2/2025"),
+            date: new Date("7/2/2025"),
             value: 30
         },
         {
-            date: new Date("4/3/2025"),
+            date: new Date("7/3/2025"),
             value: 30
         },
         {
-            date: new Date("4/4/2025"),
+            date: new Date("7/4/2025"),
             value: 30
         },
         {
-            date: new Date("4/5/2025"),
+            date: new Date("7/5/2025"),
             value: 30
         },
         {
-            date: new Date("4/6/2025"),
+            date: new Date("7/6/2025"),
             value: 20
         },
         {
-            date: new Date("4/7/2025"),
+            date: new Date("7/7/2025"),
             value: 30
         },
         {
-            date: new Date("4/8/2025"),
+            date: new Date("7/8/2025"),
             value: 30
         },
         {
-            date: new Date("4/9/2025"),
+            date: new Date("7/9/2025"),
             value: 30
         },
         {
-            date: new Date("4/10/2025"),
+            date: new Date("7/10/2025"),
             value: 20
         },
     ];
@@ -122,9 +122,9 @@ export async function gkPopulate() {
     });
 
     const sessionId = await gkDB.sessions.add({
-        title: "Spring 2025 Goals",
-        startDate: new Date("3/1/2025"),
-        endDate: new Date("4/5/2025"),
+        title: "July 2025 Goals",
+        startDate: new Date("7/1/2025"),
+        endDate: new Date("7/31/2025"),
         baseReward: "Concert ticket",
         baseRewardValue: 1,
         reachReward: "New snowboard",

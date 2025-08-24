@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PastWeekChart from './PastWeekChart';
 import LogEntryForm from './LogEntryForm';
+import AddGoalModal from './AddGoalModal';
+import { createPortal } from 'react-dom';
 import { gkDB } from '@/models/db';
 
 interface GoalCardProps {
@@ -31,6 +33,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, logs, type, unit, startDate, 
   const [editingLogRowState, setEditingLogRowState] = useState(0); // Track if a log row is being edited
   const [editValue, setEditValue] = React.useState<number>(0); // Track the value of the log being edited
   const [editDate, setEditDate] = React.useState<Date>(new Date());
+  const [showEditGoalModal, setShowEditGoalModal] = useState(false);
 
   const paginatedLogs = logs.slice(currentPage * logsPerPage, (currentPage + 1) * logsPerPage); // Logs for the current page
 
@@ -130,7 +133,12 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, logs, type, unit, startDate, 
           <div className="goalDetailsParent m-4 flex flex-col md:flex-row">
             <div className="goalDetailsContent min-w-2xs mr-4 p-4 bg-white shadow-md rounded-lg w-full md:w-[300px]">
               <div className="goalRewardDetailsParent bg-gray-100 p-4 rounded-lg border border-gray-300">
-                <h4 className="text-lg font-semibold mb-3 text-gray-700">Goal Rewards</h4>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-lg font-semibold text-gray-700">Goal Details</h4>
+                  <button onClick={() => setShowEditGoalModal(true)} className="ml-2 p-1 rounded hover:bg-gray-200" title="Edit Goal">
+                    <Pencil size={20} />
+                  </button>
+                </div>
                 <div className="goalRewardDetailsRow flex justify-between mb-2">
                   <p className="text-sm text-gray-600">{goal.baseLabel}</p>
                   <p className="text-sm font-medium text-gray-800">{goal.baseValue} {unit} per {goal.countFrequency}</p>
@@ -140,6 +148,17 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, logs, type, unit, startDate, 
                   <p className="text-sm font-medium text-gray-800">{goal.reachValue} {unit} per {goal.countFrequency}</p>
                 </div>
               </div>
+              {showEditGoalModal && createPortal(
+                <AddGoalModal
+                  setShowModal={setShowEditGoalModal}
+                  selectedSession={null}
+                  addedGoals={[]}
+                  setAddedGoals={() => {}}
+                  goalToEdit={goal}
+                  isEditMode={true}
+                />,
+                document.body
+              )}
               <LogEntryForm
                 goalType={goal.type}
                 goalId={goal.id}
