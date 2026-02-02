@@ -24,8 +24,7 @@ function Header() {
           </h1>
         </Link>
         <div className="linksParent">
-          <Link href="/project/goal-keeper" className="m-2">goal keeper</Link>
-          <Link href="/project/meal-planner" className="m-2">meal planner</Link>
+          <Link href="/showcase" className="m-2">Showcase</Link>
         </div>
       </section>
     </div>
