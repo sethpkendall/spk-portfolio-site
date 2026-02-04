@@ -44,7 +44,7 @@ const projects: Record<string, () => Promise<Project>> = {
     ]);
     
     return {
-      metadata: (await import('./goal-keeper/metadata.json')).default,
+      metadata: (await import('./goal-keeper/metadata.json')).default as ProjectMetadata,
       Component: module.default,
       codeFiles,
     };
@@ -67,7 +67,7 @@ const projects: Record<string, () => Promise<Project>> = {
     ]);
     
     return {
-      metadata: (await import('./meal-planner/metadata.json')).default,
+      metadata: (await import('./meal-planner/metadata.json')).default as ProjectMetadata,
       Component: module.default,
       codeFiles,
     };
