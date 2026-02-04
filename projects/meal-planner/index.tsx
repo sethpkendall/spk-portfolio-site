@@ -83,7 +83,7 @@ export default function MealPlanner() {
   }, []);
 
   return ( 
-    <div className="container mx-auto px-5">
+    <div className="w-full min-h-[500px]">
       <MealContext.Provider value={{mealState, setMealState: (value: {id: number | undefined; title: string; date: Date | undefined | null; type: string;}) => setMealState(value)}}>
         <MealPlannerTool
           meals={weekMealState}

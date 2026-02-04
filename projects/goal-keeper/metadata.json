@@ -1,0 +1,14 @@
+{
+  "id": "goal-keeper",
+  "title": "Goal Keeper",
+  "description": "A goal tracking application with progress visualization and milestone management. Built to help users set, track, and achieve their personal and professional goals.",
+  "tags": ["productivity", "tracking", "goals", "visualization"],
+  "createdAt": "2024-01-15",
+  "updatedAt": "2026-02-01",
+  "featured": true,
+  "githubUrl": "https://github.com/sethpkendall/spk-portfolio-site/tree/main/projects/goal-keeper",
+  "aiTools": ["Claude 3", "GitHub Copilot"],
+  "techStack": ["React", "TypeScript", "Tailwind CSS", "Chart.js"],
+  "category": "app",
+  "documentation": "# Goal Keeper\n\n## Overview\nGoal Keeper is a comprehensive goal tracking application designed to help users manage their objectives effectively.\n\n## Features\n- **Goal Creation**: Set SMART goals with deadlines\n- **Progress Tracking**: Visual progress bars and charts\n- **Milestone Management**: Break down goals into achievable milestones\n- **Analytics Dashboard**: Track your success rate over time\n\n## AI Development Process\nThis application was built using AI pair programming:\n1. Initial concept and requirements were discussed with Claude 3\n2. Component architecture was designed collaboratively\n3. GitHub Copilot assisted with boilerplate code\n4. Complex logic was refined through iterative AI consultation\n\n## Technical Implementation\n- State management using React hooks\n- Local storage for data persistence\n- Responsive design with Tailwind CSS\n- Chart.js for data visualization"
+}

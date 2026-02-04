@@ -1,0 +1,14 @@
+{
+  "id": "meal-planner",
+  "title": "Meal Planner",
+  "description": "A weekly meal planning application with drag-and-drop functionality and meal database. Built to simplify weekly meal prep and grocery planning.",
+  "tags": ["lifestyle", "planning", "meals", "database"],
+  "createdAt": "2024-01-20",
+  "updatedAt": "2026-02-01",
+  "featured": true,
+  "githubUrl": "https://github.com/sethpkendall/spk-portfolio-site/tree/main/projects/meal-planner",
+  "aiTools": ["Claude 3.5", "GitHub Copilot"],
+  "techStack": ["React", "TypeScript", "Tailwind CSS", "Dexie.js", "IndexedDB"],
+  "category": "app",
+  "documentation": "# Meal Planner\n\n## Overview\nMeal Planner is a comprehensive weekly meal planning tool that helps users organize their meals and streamline grocery shopping.\n\n## Features\n- **Weekly View**: Plan all meals for the week at a glance\n- **Meal Database**: Build a library of favorite meals for quick planning\n- **Drag & Drop**: Easily rearrange meals across days\n- **Meal Types**: Organize by breakfast, lunch, and dinner\n- **Offline Support**: All data stored locally with IndexedDB via Dexie.js\n\n## AI Development Process\nThis application was developed with AI assistance:\n1. Initial UI/UX concepts designed with Claude 3.5\n2. Database schema and IndexedDB integration planned collaboratively\n3. Component structure and state management refined through AI consultation\n4. GitHub Copilot assisted with repetitive code patterns\n\n## Technical Implementation\n- React hooks for state management\n- Dexie.js wrapper for IndexedDB\n- Context API for meal state sharing\n- Responsive design with mobile-first approach\n- Portal-based modals for better UX"
+}
