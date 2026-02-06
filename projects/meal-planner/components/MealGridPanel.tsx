@@ -42,7 +42,7 @@ export default function MealGridPanel({dayString, meal, mealType, setShowEditMod
     }
     
     return (
-        <Card className='h-[26%] mb-4 p-4 relative'>
+        <Card className='h-[28%] mb-4 p-4 relative'>
             { !meal &&
                 <div className="buttonHoverlay opacity-0 hover:cursor-pointer hover:opacity-100 duration-300 absolute inset-0 z-10 flex justify-center items-center text-6xl font-semibold" onClick={(e)=>addClick(dayString, meal)}>
                     <PlusIcon />
@@ -50,11 +50,11 @@ export default function MealGridPanel({dayString, meal, mealType, setShowEditMod
             }
             {meal &&
                 <>
-                    <Badge className='group flex flex-col text-center'>
-                        <p>{meal.title}</p>
-                        <div className='buttonParent flex space-around justify-around w-full p-1'>
-                            <Pencil size={20} strokeWidth={1} className="group-hover:cursor-pointer hover:scale-110" onClick={(e)=>editClick(meal)} />
-                            <Trash2Icon size={20} strokeWidth={1} className="group-hover:cursor-pointer hover:scale-110" onClick={()=>deleteClick(meal)}/>
+                    <Badge className='group w-full h-full flex flex-col justify-between items-center text-center py-3'>
+                        <p className='text-sm font-medium'>{meal.title}</p>
+                        <div className='buttonParent flex justify-around w-full mt-2 gap-2'>
+                            <Pencil size={20} strokeWidth={1} className="cursor-pointer hover:scale-110 transition-transform" onClick={(e)=>editClick(meal)} />
+                            <Trash2Icon size={20} strokeWidth={1} className="cursor-pointer hover:scale-110 transition-transform" onClick={()=>deleteClick(meal)}/>
                         </div>
                     </Badge>
                 </>
