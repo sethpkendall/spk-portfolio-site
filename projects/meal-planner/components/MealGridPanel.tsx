@@ -52,7 +52,7 @@ export default function MealGridPanel({dayString, meal, mealType, setShowEditMod
                 <>
                     <Badge className='group w-full h-full flex flex-col justify-between items-center text-center py-3'>
                         <p className='text-sm font-medium'>{meal.title}</p>
-                        <div className='buttonParent flex justify-around w-full mt-2 gap-2'>
+                        <div className='buttonParent flex justify-center w-full mt-2 gap-4'>
                             <Pencil size={20} strokeWidth={1} className="cursor-pointer hover:scale-110 transition-transform" onClick={(e)=>editClick(meal)} />
                             <Trash2Icon size={20} strokeWidth={1} className="cursor-pointer hover:scale-110 transition-transform" onClick={()=>deleteClick(meal)}/>
                         </div>
