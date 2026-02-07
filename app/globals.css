@@ -99,7 +99,7 @@
 
   /* Home link with standard black hover effect */
   .home-link {
-    color: #000;
+    color: hsl(var(--foreground));
   }
 
   .home-link::after {
@@ -110,7 +110,7 @@
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: #000;
+    background-color: hsl(var(--foreground));
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
   }
