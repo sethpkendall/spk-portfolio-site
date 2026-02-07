@@ -42,7 +42,7 @@ function Footer() {
               Seth P. Kendall
             </h3>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Software developer showcasing AI-powered projects and technical writing. Check out my latest blog posts and interactive demos.
+              Software developer showcasing app creation range and technical writing. Check out my latest blog posts and interactive demos in the showcase.
             </p>
           </div>
 
@@ -68,6 +68,14 @@ function Footer() {
             </h4>
             <nav className="flex flex-col gap-2 text-sm">
               <a 
+                href="https://www.linkedin.com/in/sethpkendall/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+              >
+                LinkedIn
+              </a>
+              <a 
                 href="https://github.com/sethpkendall" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -85,12 +93,6 @@ function Footer() {
               </a>
             </nav>
           </div>
-        </div>
-
-        {/* Bottom bar with copyright and attribution */}
-        <div className="py-6 border-t border-accent-2 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
-          <p>© {new Date().getFullYear()} Seth P. Kendall. All rights reserved.</p>
-          <p className="text-xs">Built with ❤️ and AI assistance</p>
         </div>
       </div>
     </footer>
