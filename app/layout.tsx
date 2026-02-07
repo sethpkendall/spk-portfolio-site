@@ -17,14 +17,23 @@ const inter = Inter({
 function Header() {
   return (
     <div className="container mx-auto px-5">
-      <section className="flex-col md:flex-row flex items-center md:justify-between mt-12 mb-12 md:mb-8">
-        <Link href="/">
-          <h1 className="mb-3 mt-2 text-2xl font-bold leading-tight tracking-tight md:text-4xl md:tracking-tighter">
-            Seth P. Kendall
-          </h1>
-        </Link>
-        <div className="linksParent">
-          <Link href="/showcase" className="m-2">Showcase</Link>
+      <section className="flex flex-col items-center mt-12 mb-12 md:mb-8">
+        <h1 className="mb-6 mt-2 text-3xl font-bold leading-tight tracking-tight md:text-5xl md:tracking-tighter text-center">
+          Seth P. Kendall
+        </h1>
+        <div className="flex gap-8">
+          <Link 
+            href="/" 
+            className="nav-link text-lg md:text-xl font-medium relative px-2 py-1"
+          >
+            Home
+          </Link>
+          <Link 
+            href="/showcase" 
+            className="nav-link text-lg md:text-xl font-medium relative px-2 py-1"
+          >
+            Showcase
+          </Link>
         </div>
       </section>
     </div>

@@ -26,22 +26,49 @@ export default async function ShowcasePage() {
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-8 h-8" />
               <h1 className="text-4xl md:text-5xl font-bold">
-                AI-Powered Project Showcase
+                Project Showcase
               </h1>
               <Sparkles className="w-8 h-8" />
             </div>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Explore applications built with the help of AI coding assistants. 
-              Each project showcases the collaboration between human creativity and artificial intelligence.
+              Explore applications that I've built along with their code and some documentation of their intent and execution.
             </p>
           </div>
         </div>
         
-        {/* Wave decoration */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="w-full h-16" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" 
-              className="fill-gray-50 dark:fill-gray-900"/>
+        {/* Network web poly decoration */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden">
+          <svg className="w-full h-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="polyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style={{ stopColor: '#667eea', stopOpacity: 0.3 }} />
+                <stop offset="50%" style={{ stopColor: '#764ba2', stopOpacity: 0.3 }} />
+                <stop offset="100%" style={{ stopColor: '#f093fb', stopOpacity: 0.3 }} />
+              </linearGradient>
+            </defs>
+            {/* Polygon mesh pattern */}
+            <polygon points="0,128 240,160 480,96 720,192 960,128 1200,160 1440,64 1440,320 0,320" fill="url(#polyGradient)" opacity="0.5"/>
+            <polygon points="0,192 320,128 640,224 960,160 1280,192 1440,128 1440,320 0,320" fill="url(#polyGradient)" opacity="0.4"/>
+            <polygon points="0,256 360,192 720,256 1080,192 1440,224 1440,320 0,320" fill="url(#polyGradient)" opacity="0.6"/>
+            {/* Connection lines */}
+            <line x1="240" y1="160" x2="480" y2="96" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+            <line x1="480" y1="96" x2="720" y2="192" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+            <line x1="720" y1="192" x2="960" y2="128" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+            <line x1="960" y1="128" x2="1200" y2="160" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+            <line x1="320" y1="128" x2="640" y2="224" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            <line x1="640" y1="224" x2="960" y2="160" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            <line x1="960" y1="160" x2="1280" y2="192" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            {/* Node circles */}
+            <circle cx="240" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="480" cy="96" r="4" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="720" cy="192" r="4" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="960" cy="128" r="4" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="1200" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="320" cy="128" r="3" fill="rgba(255,255,255,0.5)"/>
+            <circle cx="640" cy="224" r="3" fill="rgba(255,255,255,0.5)"/>
+            <circle cx="1280" cy="192" r="3" fill="rgba(255,255,255,0.5)"/>
+            {/* Solid base */}
+            <rect x="0" y="260" width="1440" height="60" className="fill-gray-50 dark:fill-gray-900"/>
           </svg>
         </div>
       </div>
