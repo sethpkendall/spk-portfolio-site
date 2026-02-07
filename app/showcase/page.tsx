@@ -37,7 +37,7 @@ export default async function ShowcasePage() {
         </div>
         
         {/* Network web poly decoration - hidden on mobile */}
-        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden pointer-events-none">
+        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden pointer-events-none" aria-hidden="true">
           <svg className="absolute right-0 top-0 h-full w-full" viewBox="0 0 600 400" preserveAspectRatio="xMaxYMid slice">
             <defs>
               <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
