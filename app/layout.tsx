@@ -35,10 +35,62 @@ function Footer() {
   return (
     <footer className="bg-accent-1 border-t border-accent-2">
       <div className="container mx-auto px-5">
-        <div className="py-28 flex flex-col lg:flex-row items-center">
-          <h3 className="text-xl lg:text-2xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4 lg:w-1/2">
-            Footer Content
-          </h3>
+        <div className="py-12 flex flex-col lg:flex-row justify-between items-start gap-8">
+          {/* Brand and description */}
+          <div className="flex flex-col gap-3 lg:w-1/3">
+            <h3 className="text-xl font-bold tracking-tighter leading-tight">
+              Seth P. Kendall
+            </h3>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              Software developer showcasing AI-powered projects and technical writing. Check out my latest blog posts and interactive demos.
+            </p>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
+              Navigate
+            </h4>
+            <nav className="flex flex-col gap-2 text-sm">
+              <Link href="/" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                Blog Posts
+              </Link>
+              <Link href="/showcase" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                Showcase
+              </Link>
+            </nav>
+          </div>
+
+          {/* Connect */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
+              Connect
+            </h4>
+            <nav className="flex flex-col gap-2 text-sm">
+              <a 
+                href="https://github.com/sethpkendall" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+              >
+                GitHub
+              </a>
+              <a 
+                href="https://github.com/sethpkendall/spk-portfolio-site" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+              >
+                View Source
+              </a>
+            </nav>
+          </div>
+        </div>
+
+        {/* Bottom bar with copyright and attribution */}
+        <div className="py-6 border-t border-accent-2 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
+          <p>© {new Date().getFullYear()} Seth P. Kendall. All rights reserved.</p>
+          <p className="text-xs">Built with ❤️ and AI assistance</p>
         </div>
       </div>
     </footer>
