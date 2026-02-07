@@ -42,7 +42,7 @@ export default function MealGridPanel({dayString, meal, mealType, setShowEditMod
     }
     
     return (
-        <Card className='h-[28%] mb-4 p-4 relative'>
+        <Card className='h-20 md:h-[120px] mb-4 p-4 relative'>
             { !meal &&
                 <div className="buttonHoverlay opacity-0 hover:cursor-pointer hover:opacity-100 duration-300 absolute inset-0 z-10 flex justify-center items-center text-6xl font-semibold" onClick={(e)=>addClick(dayString, meal)}>
                     <PlusIcon />
