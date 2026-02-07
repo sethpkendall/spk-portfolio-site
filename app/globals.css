@@ -97,8 +97,31 @@
     transform-origin: bottom left;
   }
 
-  /* Navigation links with gradient hover effect */
-  .nav-link {
+  /* Home link with standard black hover effect */
+  .home-link {
+    color: #000;
+  }
+
+  .home-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  }
+
+  .home-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  /* Showcase link with gradient effect */
+  .showcase-link {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-size: 200% 200%;
     background-clip: text;
@@ -108,11 +131,11 @@
     transition: all 0.4s ease;
   }
 
-  .nav-link::after {
+  .showcase-link::after {
     display: none;
   }
 
-  .nav-link:hover {
+  .showcase-link:hover {
     background-position: 0 100%;
     transform: translateY(-2px);
   }

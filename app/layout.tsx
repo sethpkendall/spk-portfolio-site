@@ -24,13 +24,13 @@ function Header() {
         <div className="flex gap-8">
           <Link 
             href="/" 
-            className="nav-link text-lg md:text-xl font-medium relative px-2 py-1"
+            className="home-link text-lg md:text-xl font-medium relative px-2 py-1"
           >
             Home
           </Link>
           <Link 
             href="/showcase" 
-            className="nav-link text-lg md:text-xl font-medium relative px-2 py-1"
+            className="showcase-link text-lg md:text-xl font-bold relative px-2 py-1"
           >
             Showcase
           </Link>

@@ -36,39 +36,47 @@ export default async function ShowcasePage() {
           </div>
         </div>
         
-        {/* Network web poly decoration */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden">
-          <svg className="w-full h-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        {/* Network web poly decoration - hidden on mobile */}
+        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden pointer-events-none">
+          <svg className="absolute right-0 top-0 h-full w-full" viewBox="0 0 600 400" preserveAspectRatio="xMaxYMid slice">
             <defs>
-              <linearGradient id="polyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{ stopColor: '#667eea', stopOpacity: 0.3 }} />
-                <stop offset="50%" style={{ stopColor: '#764ba2', stopOpacity: 0.3 }} />
-                <stop offset="100%" style={{ stopColor: '#f093fb', stopOpacity: 0.3 }} />
+              <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#667eea', stopOpacity: 0.6 }} />
+                <stop offset="50%" style={{ stopColor: '#764ba2', stopOpacity: 0.5 }} />
+                <stop offset="100%" style={{ stopColor: '#f093fb', stopOpacity: 0.4 }} />
               </linearGradient>
             </defs>
-            {/* Polygon mesh pattern */}
-            <polygon points="0,128 240,160 480,96 720,192 960,128 1200,160 1440,64 1440,320 0,320" fill="url(#polyGradient)" opacity="0.5"/>
-            <polygon points="0,192 320,128 640,224 960,160 1280,192 1440,128 1440,320 0,320" fill="url(#polyGradient)" opacity="0.4"/>
-            <polygon points="0,256 360,192 720,256 1080,192 1440,224 1440,320 0,320" fill="url(#polyGradient)" opacity="0.6"/>
+            {/* Large triangular polygons */}
+            <polygon points="450,50 580,120 520,180" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+            <polygon points="520,180 580,120 600,200" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" strokeWidth="2"/>
+            <polygon points="380,100 450,50 480,140" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+            <polygon points="480,140 520,180 450,230" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <polygon points="450,230 520,180 550,280" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" strokeWidth="2"/>
+            <polygon points="380,200 450,230 420,300" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+            <polygon points="550,280 600,200 600,350" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+            <polygon points="420,300 550,280 500,380" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.25)" strokeWidth="2"/>
             {/* Connection lines */}
-            <line x1="240" y1="160" x2="480" y2="96" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1="480" y1="96" x2="720" y2="192" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1="720" y1="192" x2="960" y2="128" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1="960" y1="128" x2="1200" y2="160" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1="320" y1="128" x2="640" y2="224" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            <line x1="640" y1="224" x2="960" y2="160" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            <line x1="960" y1="160" x2="1280" y2="192" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            {/* Node circles */}
-            <circle cx="240" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="480" cy="96" r="4" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="720" cy="192" r="4" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="960" cy="128" r="4" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="1200" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="320" cy="128" r="3" fill="rgba(255,255,255,0.5)"/>
-            <circle cx="640" cy="224" r="3" fill="rgba(255,255,255,0.5)"/>
-            <circle cx="1280" cy="192" r="3" fill="rgba(255,255,255,0.5)"/>
-            {/* Solid base */}
-            <rect x="0" y="260" width="1440" height="60" className="fill-gray-50 dark:fill-gray-900"/>
+            <line x1="450" y1="50" x2="580" y2="120" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+            <line x1="580" y1="120" x2="520" y2="180" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+            <line x1="520" y1="180" x2="450" y2="230" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+            <line x1="450" y1="230" x2="380" y2="200" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <line x1="380" y1="200" x2="420" y2="300" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <line x1="450" y1="50" x2="380" y2="100" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <line x1="380" y1="100" x2="480" y2="140" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <line x1="480" y1="140" x2="520" y2="180" stroke="rgba(255,255,255,0.35)" strokeWidth="2"/>
+            <line x1="550" y1="280" x2="600" y2="200" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+            <line x1="550" y1="280" x2="420" y2="300" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+            {/* Large node circles with gradient */}
+            <circle cx="450" cy="50" r="8" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.8)" strokeWidth="2"/>
+            <circle cx="580" cy="120" r="8" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.8)" strokeWidth="2"/>
+            <circle cx="520" cy="180" r="8" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.8)" strokeWidth="2"/>
+            <circle cx="450" cy="230" r="8" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.8)" strokeWidth="2"/>
+            <circle cx="380" cy="200" r="7" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/>
+            <circle cx="380" cy="100" r="7" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/>
+            <circle cx="480" cy="140" r="7" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/>
+            <circle cx="550" cy="280" r="8" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.8)" strokeWidth="2"/>
+            <circle cx="420" cy="300" r="7" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/>
+            <circle cx="600" cy="200" r="6" fill="url(#nodeGradient)" stroke="rgba(255,255,255,0.6)" strokeWidth="2"/>
           </svg>
         </div>
       </div>

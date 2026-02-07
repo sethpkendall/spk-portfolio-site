@@ -10,7 +10,7 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/showcase/${project.id}`}>
-      <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:scale-[1.02] dark:border-gray-700 dark:bg-gray-800">
+      <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:scale-[1.02] dark:border-gray-700 dark:bg-gray-800 min-h-[320px] md:min-h-[340px] flex flex-col">
         {project.featured && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs px-2 py-1 rounded-full">
             Featured
@@ -26,9 +26,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 mt-auto">
           {/* Tech Stack */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 min-h-[32px]">
             {project.techStack.slice(0, 4).map((tech) => (
               <span
                 key={tech}
