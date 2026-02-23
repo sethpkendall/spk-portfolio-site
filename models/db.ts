@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 import { gkPopulate, mpPopulate } from './populate';
-import { Meal, Food, Recipe, Session, Goal, Log } from './interfaces';
+import { Meal, Food, Recipe, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem } from './interfaces';
 
 
 export class MealPlannerDB extends Dexie {
@@ -35,17 +35,40 @@ export class GoalKeeperDB extends Dexie {
 
 export const gkDB = new GoalKeeperDB();
 
+// ── Aquarium Manager DB ───────────────────────────────────────
+
+export class AquariumManagerDB extends Dexie {
+    aquariums!: Table<Aquarium, number>;
+    inhabitants!: Table<Inhabitant, number>;
+    activityTypes!: Table<ActivityType, number>;
+    activityLogs!: Table<ActivityLog, number>;
+    equipment!: Table<EquipmentItem, number>;
+
+    constructor() {
+        super('AquariumManagerDB');
+        this.version(1).stores({
+            aquariums: '++id, name',
+            inhabitants: '++id, aquariumId, name, species',
+            activityTypes: '++id, aquariumId, label',
+            activityLogs: '++id, aquariumId, activityTypeId, date',
+            equipment: '++id, aquariumId, label, inUse',
+        });
+    }
+}
+
+export const amDB = new AquariumManagerDB();
+
 // mpDB.on('populate', mpPopulate);
 // gkDB.on('populate', gkPopulate);
 // resetDatabase();    
 
 // export function resetDatabase() {
-//     // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
-//     //     await Promise.all(mpDB.tables.map(table => table.clear()));
-//     //     await mpPopulate();
-//     // });
-//     return gkDB.transaction('rw', gkDB.sessions, gkDB.goals, gkDB.logs, async () => {
-//         await Promise.all(gkDB.tables.map(table => table.clear()));
+    // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
+    //     await Promise.all(mpDB.tables.map(table => table.clear()));
+    //     await mpPopulate();
+    // });
+//     return amDB.transaction('rw', amDB.aquariums, amDB.inhabitants, amDB.activityTypes, amDB.activityLogs, amDB.equipment, async () => {
+//         await Promise.all(amDB.tables.map(table => table.clear()));
 //         await gkPopulate();
 //     });
 // }

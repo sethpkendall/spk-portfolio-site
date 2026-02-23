@@ -1,0 +1,14 @@
+{
+  "id": "aquarium-manager",
+  "title": "Aquarium Manager",
+  "description": "A dashboard for management and tracking of home aquarium upkeep tasks.",
+  "tags": ["husbandry", "tracking", "logging", "inventory"],
+  "createdAt": "2026-02-11",
+  "updatedAt": "2026-02-11",
+  "featured": false,
+  "githubUrl": "https://github.com/sethpkendall/spk-portfolio-site/tree/main/projects/aquarium-manager",
+  "aiTools": ["Claude 4", "GitHub Copilot"],
+  "techStack": ["React", "TypeScript", "Tailwind CSS", "Dexie.js", "IndexedDB"],
+  "category": "app",
+  "documentation": "# Aquarium Manager\n\n## Overview\nAquarium Manager is a simple application for the tracking of aquarium upkeep tasks.\n\n## Features\n- **Aquarium Dashboard**: Centered aquarium image with inhabitant gallery\n- **Inhabitant Profiles**: Track fish and other inhabitants with name, species and photo\n- **Activity Logging**: Log feedings, water changes, cleanings, filter maintenance and custom activity types\n- **Reminders**: Set reminder periods for each activity so overdue tasks are highlighted\n- **Equipment Inventory**: Track aquarium equipment with label, count, description, date of first use and in-use status\n\n## Technical Implementation\n- State management using React hooks\n- Local storage for data persistence via Dexie.js / IndexedDB\n- Responsive design with Tailwind CSS\n- Radix UI dialog components for modals"
+}

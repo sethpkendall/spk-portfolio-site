@@ -140,3 +140,123 @@
     transform: translateY(-2px);
   }
 }
+
+/* ── 3-D push-button effect for Aquarium Manager ── */
+.am-3d-btn {
+  box-shadow: 0 5px 0 0 rgba(0, 0, 0, 0.15);
+  transform: translateY(0);
+  transition: transform 75ms ease-out, box-shadow 75ms ease-out;
+}
+
+.am-3d-btn:hover {
+  box-shadow: 0 5px 0 0 rgba(0, 0, 0, 0.22);
+}
+
+.am-3d-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Smaller depth for regular buttons (vs. cards) */
+.am-3d-btn--sm {
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+.am-3d-btn--sm:hover {
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.25);
+}
+
+.am-3d-btn--sm:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Primary-colored buttons – warm shadow */
+.am-3d-btn--primary {
+  box-shadow: 0 3px 0 0 rgba(154, 52, 18, 0.7);
+}
+
+.am-3d-btn--primary:hover {
+  box-shadow: 0 3px 0 0 rgba(154, 52, 18, 0.85);
+}
+
+.am-3d-btn--primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 0 rgba(154, 52, 18, 0.7);
+}
+
+/* Ghost buttons – very subtle */
+.am-3d-btn--ghost {
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+.am-3d-btn--ghost:hover {
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+.am-3d-btn--ghost:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Overdue variant – dark-red bottom edge */
+.am-3d-btn--overdue {
+  box-shadow: 0 5px 0 0 rgba(127, 29, 29, 0.85);
+}
+
+.am-3d-btn--overdue:hover {
+  box-shadow: 0 5px 0 0 rgba(127, 29, 29, 0.95);
+}
+
+.am-3d-btn--overdue:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 0 rgba(127, 29, 29, 0.85);
+}
+
+/* Disabled buttons should not look 3D */
+.am-3d-btn:disabled,
+.am-3d-btn[disabled] {
+  box-shadow: none;
+  transform: none;
+}
+
+/* Dark-mode adjustments */
+.dark .am-3d-btn:not(.am-3d-btn--overdue):not(.am-3d-btn--primary):not(.am-3d-btn--ghost):not(:disabled) {
+  box-shadow: 0 5px 0 0 rgba(0, 0, 0, 0.5);
+}
+.dark .am-3d-btn:not(.am-3d-btn--overdue):not(.am-3d-btn--primary):not(.am-3d-btn--ghost):not(:disabled):hover {
+  box-shadow: 0 5px 0 0 rgba(0, 0, 0, 0.65);
+}
+.dark .am-3d-btn:not(.am-3d-btn--overdue):not(.am-3d-btn--primary):not(.am-3d-btn--ghost):not(:disabled):active {
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.dark .am-3d-btn--sm:not(.am-3d-btn--primary):not(:disabled) {
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.5);
+}
+.dark .am-3d-btn--sm:not(.am-3d-btn--primary):not(:disabled):hover {
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.65);
+}
+.dark .am-3d-btn--sm:not(.am-3d-btn--primary):not(:disabled):active {
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.dark .am-3d-btn--primary:not(:disabled) {
+  box-shadow: 0 3px 0 0 rgba(120, 40, 10, 0.9);
+}
+.dark .am-3d-btn--primary:not(:disabled):hover {
+  box-shadow: 0 3px 0 0 rgba(120, 40, 10, 1);
+}
+.dark .am-3d-btn--primary:not(:disabled):active {
+  box-shadow: 0 0 0 0 rgba(120, 40, 10, 0.9);
+}
+
+.dark .am-3d-btn--ghost:not(:disabled) {
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.25);
+}
+.dark .am-3d-btn--ghost:not(:disabled):hover {
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.4);
+}
+.dark .am-3d-btn--ghost:not(:disabled):active {
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25);
+}

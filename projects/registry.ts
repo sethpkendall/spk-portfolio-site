@@ -72,6 +72,28 @@ const projects: Record<string, () => Promise<Project>> = {
       codeFiles,
     };
   },
+  'aquarium-manager': async () => {
+    const module = await import('./aquarium-manager');
+
+    const codeFiles = getProjectCodeFiles('aquarium-manager', [
+      'index.tsx',
+      'components/AquariumHeader.tsx',
+      'components/SetupWizard.tsx',
+      'components/InhabitantList.tsx',
+      'components/AddInhabitantModal.tsx',
+      'components/ActivityDashboard.tsx',
+      'components/AddActivityTypeModal.tsx',
+      'components/LogActivityModal.tsx',
+      'components/EquipmentInventory.tsx',
+      'components/AddEquipmentModal.tsx',
+    ]);
+
+    return {
+      metadata: (await import('./aquarium-manager/metadata.json')).default as ProjectMetadata,
+      Component: module.default,
+      codeFiles,
+    };
+  },
   // Add new projects here following the same pattern
 };
 
