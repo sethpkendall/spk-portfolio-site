@@ -89,7 +89,9 @@ export async function seedExampleData(): Promise<number> {
   await amDB.activityLogs.bulkAdd(logs);
 
   // Persist flag so we know the current data is example data
-  localStorage.setItem(EXAMPLE_DATA_KEY, String(aquariumId));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(EXAMPLE_DATA_KEY, String(aquariumId));
+  }
 
   return aquariumId;
 }
@@ -98,6 +100,7 @@ export async function seedExampleData(): Promise<number> {
  * Remove all records that belong to the example aquarium and clear the flag.
  */
 export async function clearExampleData(): Promise<void> {
+  if (typeof window === 'undefined') return;
   const raw = localStorage.getItem(EXAMPLE_DATA_KEY);
   if (!raw) return;
 
@@ -116,5 +119,6 @@ export async function clearExampleData(): Promise<void> {
 
 /** Check whether the current dataset is the example seed. */
 export function isExampleDataLoaded(): boolean {
+  if (typeof window === 'undefined') return false;
   return localStorage.getItem(EXAMPLE_DATA_KEY) !== null;
 }
