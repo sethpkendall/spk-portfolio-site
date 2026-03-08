@@ -1,0 +1,14 @@
+{
+  "id": "pomodoro-timer",
+  "title": "Pomodoro Timer",
+  "description": "An Italian-inspired Pomodoro productivity timer with rich visual polish, session tracking, and delightful completion celebrations. Built using GitHub's Spec-Kit methodology.",
+  "tags": ["productivity", "timer", "pomodoro", "italian", "design"],
+  "createdAt": "2026-03-07",
+  "updatedAt": "2026-03-07",
+  "featured": false,
+  "githubUrl": "https://github.com/sethpkendall/spk-portfolio-site/tree/main/projects/pomodoro-timer",
+  "aiTools": ["Spec-Kit", "GitHub Copilot"],
+  "techStack": ["React", "TypeScript", "Tailwind CSS", "Dexie.js", "IndexedDB"],
+  "category": "app",
+  "documentation": "# Pomodoro Timer\n\n## Overview\nA Pomodoro productivity timer that celebrates Italian style and craftsmanship. Named after the tomato-shaped kitchen timer used by Francesco Cirillo, this app brings warmth, personality, and visual delight to the classic time management technique.\n\n## Features\n- **Classic Pomodoro Cycle**: 25-minute work sessions, 5-minute short breaks, 15-minute long breaks after every 4 pomodoros\n- **Italian-Inspired Design**: Warm tomato reds, olive greens, parchment textures, and elegant typography\n- **Tactile Timer**: A visually rich countdown with satisfying animations — not a flat digital clock\n- **Celebration Animations**: Delightful visual feedback when a pomodoro is completed\n- **Session History**: Track completed pomodoros with Dexie.js/IndexedDB persistence\n- **Configurable Durations**: Adjust work, short break, and long break lengths\n\n## AI Development Process\nThis project was developed using GitHub's Spec-Kit (Spec-Driven Development methodology):\n1. Project constitution established to define architectural guardrails\n2. Functional specification created via `/speckit.specify`\n3. Technical implementation plan generated via `/speckit.plan`\n4. Task breakdown produced via `/speckit.tasks`\n5. Implementation executed via `/speckit.implement`\n\n## Technical Implementation\n- React hooks for timer state management\n- CSS animations and Tailwind for the Italian-themed visual design\n- Dexie.js for session history persistence\n- Responsive design with mobile-first approach"
+}

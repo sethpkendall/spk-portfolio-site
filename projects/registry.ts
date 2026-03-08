@@ -94,6 +94,19 @@ const projects: Record<string, () => Promise<Project>> = {
       codeFiles,
     };
   },
+  'pomodoro-timer': async () => {
+    const module = await import('./pomodoro-timer');
+
+    const codeFiles = getProjectCodeFiles('pomodoro-timer', [
+      'index.tsx',
+    ]);
+
+    return {
+      metadata: (await import('./pomodoro-timer/metadata.json')).default as ProjectMetadata,
+      Component: module.default,
+      codeFiles,
+    };
+  },
   // Add new projects here following the same pattern
 };
 
