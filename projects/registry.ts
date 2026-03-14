@@ -99,6 +99,13 @@ const projects: Record<string, () => Promise<Project>> = {
 
     const codeFiles = getProjectCodeFiles('pomodoro-timer', [
       'index.tsx',
+      'components/TimerDisplay.tsx',
+      'components/TimerControls.tsx',
+      'components/CycleIndicator.tsx',
+      'components/CelebrationAnimation.tsx',
+      'components/SessionHistory.tsx',
+      'components/SettingsPanel.tsx',
+      'components/TodaySummary.tsx',
     ]);
 
     return {

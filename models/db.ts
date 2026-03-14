@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 import { gkPopulate, mpPopulate } from './populate';
-import { Meal, Food, Recipe, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem } from './interfaces';
+import { Meal, Food, Recipe, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem, PomodoroSession, PomodoroSettings } from './interfaces';
 
 
 export class MealPlannerDB extends Dexie {
@@ -57,6 +57,23 @@ export class AquariumManagerDB extends Dexie {
 }
 
 export const amDB = new AquariumManagerDB();
+
+// ── Pomodoro Timer DB ─────────────────────────────────────────
+
+export class PomodoroTimerDB extends Dexie {
+    pomodoroSessions!: Table<PomodoroSession, number>;
+    pomodoroSettings!: Table<PomodoroSettings, number>;
+
+    constructor() {
+        super('PomodoroTimerDB');
+        this.version(1).stores({
+            pomodoroSessions: '++id, completedAt, type',
+            pomodoroSettings: '++id',
+        });
+    }
+}
+
+export const ptDB = new PomodoroTimerDB();
 
 // mpDB.on('populate', mpPopulate);
 // gkDB.on('populate', gkPopulate);

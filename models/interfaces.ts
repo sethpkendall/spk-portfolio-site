@@ -90,3 +90,19 @@ export interface EquipmentItem {
     firstUsedDate: Date;
     inUse: boolean;
 }
+
+// ── Pomodoro Timer ────────────────────────────────────────────
+
+export interface PomodoroSession {
+    id?: number;
+    completedAt: Date;
+    durationMinutes: number;
+    type: 'work' | 'shortBreak' | 'longBreak';
+}
+
+export interface PomodoroSettings {
+    id?: number;
+    workMinutes: number;
+    shortBreakMinutes: number;
+    longBreakMinutes: number;
+}
