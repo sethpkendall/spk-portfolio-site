@@ -85,7 +85,7 @@ export default function PomodoroTimer() {
     DEFAULT_SETTINGS.workMinutes * 60 * 1000,
   );
   const timerElapsedRef = useRef<number>(0);
-  const rafIdRef = useRef<number>(0);
+  const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Keep settings in sync with timer duration when idle
   useEffect(() => {
@@ -140,24 +140,36 @@ export default function PomodoroTimer() {
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
 
-  // ── rAF tick loop ────────────────────────────────────────────
+  // ── Interval tick loop ───────────────────────────────────────
   const completePhaseRef = useRef<() => void>(() => {});
 
-  const tick = useCallback(() => {
-    const now = Date.now();
-    const elapsed = timerElapsedRef.current + (now - timerStartRef.current);
-    const remaining = timerDurationRef.current - elapsed;
-
-    if (remaining <= 0) {
-      setTimeRemainingMs(0);
-      cancelAnimationFrame(rafIdRef.current);
-      completePhaseRef.current();
-      return;
+  const clearTickInterval = useCallback(() => {
+    if (intervalIdRef.current !== null) {
+      clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
     }
-
-    setTimeRemainingMs(remaining);
-    rafIdRef.current = requestAnimationFrame(tick);
   }, []);
+
+  const startTickInterval = useCallback(() => {
+    clearTickInterval();
+    intervalIdRef.current = setInterval(() => {
+      const now = Date.now();
+      const elapsed = timerElapsedRef.current + (now - timerStartRef.current);
+      const remaining = timerDurationRef.current - elapsed;
+
+      if (remaining <= 0) {
+        setTimeRemainingMs(0);
+        if (intervalIdRef.current !== null) {
+          clearInterval(intervalIdRef.current);
+          intervalIdRef.current = null;
+        }
+        completePhaseRef.current();
+        return;
+      }
+
+      setTimeRemainingMs(remaining);
+    }, 100);
+  }, [clearTickInterval]);
 
   // ── Phase transition helper ──────────────────────────────────
   const transitionToPhase = useCallback(
@@ -169,14 +181,14 @@ export default function PomodoroTimer() {
       timerElapsedRef.current = 0;
       timerStartRef.current = Date.now();
       setTimerState("running");
-      rafIdRef.current = requestAnimationFrame(tick);
+      startTickInterval();
     },
-    [tick],
+    [startTickInterval],
   );
 
   // ── Phase completion logic ───────────────────────────────────
   const completePhase = useCallback(() => {
-    cancelAnimationFrame(rafIdRef.current);
+    clearTickInterval();
     setTimerState("idle");
 
     const currentPhase = phaseRef.current;
@@ -225,7 +237,7 @@ export default function PomodoroTimer() {
         setPhaseTransition(false);
       }, 800);
     }
-  }, [transitionToPhase]);
+  }, [transitionToPhase, clearTickInterval]);
 
   // Keep completePhaseRef in sync
   completePhaseRef.current = completePhase;
@@ -239,30 +251,30 @@ export default function PomodoroTimer() {
     timerStartRef.current = Date.now();
     setTimeRemainingMs(dur);
     setTimerState("running");
-    rafIdRef.current = requestAnimationFrame(tick);
-  }, [phase, settings, tick]);
+    startTickInterval();
+  }, [phase, settings, startTickInterval]);
 
   const handlePause = useCallback(() => {
     timerElapsedRef.current += Date.now() - timerStartRef.current;
-    cancelAnimationFrame(rafIdRef.current);
+    clearTickInterval();
     setTimerState("paused");
-  }, []);
+  }, [clearTickInterval]);
 
   const handleResume = useCallback(() => {
     timerStartRef.current = Date.now();
     setTimerState("running");
-    rafIdRef.current = requestAnimationFrame(tick);
-  }, [tick]);
+    startTickInterval();
+  }, [startTickInterval]);
 
   const handleReset = useCallback(() => {
-    cancelAnimationFrame(rafIdRef.current);
+    clearTickInterval();
     timerElapsedRef.current = 0;
     timerStartRef.current = 0;
     const dur = phaseDurationMs(phase, settings);
     timerDurationRef.current = dur;
     setTimeRemainingMs(dur);
     setTimerState("idle");
-  }, [phase, settings]);
+  }, [phase, settings, clearTickInterval]);
 
   // ── Celebration complete callback ────────────────────────────
   const handleCelebrationComplete = useCallback(() => {
@@ -284,10 +296,12 @@ export default function PomodoroTimer() {
     [dbAvailable],
   );
 
-  // ── Cleanup rAF on unmount ───────────────────────────────────
+  // ── Cleanup interval on unmount ──────────────────────────────
   useEffect(() => {
     return () => {
-      cancelAnimationFrame(rafIdRef.current);
+      if (intervalIdRef.current !== null) {
+        clearInterval(intervalIdRef.current);
+      }
     };
   }, []);
 

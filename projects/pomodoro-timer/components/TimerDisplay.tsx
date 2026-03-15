@@ -92,7 +92,7 @@ export default function TimerDisplay({
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
-          className={`transition-[stroke-dashoffset] duration-1000 linear ${
+          className={`transition-[stroke-dashoffset] duration-200 linear ${
             timerState === "running" ? "pt-ring-pulse" : ""
           }`}
           style={{

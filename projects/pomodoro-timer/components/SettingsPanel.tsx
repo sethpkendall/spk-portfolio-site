@@ -51,20 +51,20 @@ export default function SettingsPanel({
       <DialogContent
         className="sm:max-w-md"
         style={{
-          backgroundColor: "var(--pt-linen)",
+          backgroundColor: "#FAF0E6",
           borderColor: "rgba(62, 39, 35, 0.15)",
         }}
       >
         <DialogHeader>
           <DialogTitle
             className="font-serif text-xl"
-            style={{ color: "var(--pt-espresso)" }}
+            style={{ color: "#3E2723" }}
           >
             Timer Settings
           </DialogTitle>
           <DialogDescription
             className="text-sm"
-            style={{ color: "var(--pt-espresso-light)" }}
+            style={{ color: "#5D4037" }}
           >
             Customize your Pomodoro session durations.
           </DialogDescription>
@@ -76,13 +76,13 @@ export default function SettingsPanel({
             <div className="flex justify-between items-center">
               <label
                 className="text-sm font-medium"
-                style={{ color: "var(--pt-espresso)" }}
+                style={{ color: "#3E2723" }}
               >
                 Work Duration
               </label>
               <span
                 className="text-sm font-semibold tabular-nums"
-                style={{ color: "var(--pt-tomato-red)" }}
+                style={{ color: "#C0392B" }}
               >
                 {localSettings.workMinutes} min
               </span>
@@ -95,11 +95,11 @@ export default function SettingsPanel({
               min={1}
               max={60}
               step={1}
-              className="[&_[role=slider]]:bg-[var(--pt-tomato-red)]"
+              className="[&_[role=slider]]:bg-[#C0392B]"
             />
             <div
               className="flex justify-between text-xs opacity-40"
-              style={{ color: "var(--pt-espresso)" }}
+              style={{ color: "#3E2723" }}
             >
               <span>1 min</span>
               <span>60 min</span>
@@ -111,13 +111,13 @@ export default function SettingsPanel({
             <div className="flex justify-between items-center">
               <label
                 className="text-sm font-medium"
-                style={{ color: "var(--pt-espresso)" }}
+                style={{ color: "#3E2723" }}
               >
                 Short Break
               </label>
               <span
                 className="text-sm font-semibold tabular-nums"
-                style={{ color: "var(--pt-olive-green)" }}
+                style={{ color: "#6B8E23" }}
               >
                 {localSettings.shortBreakMinutes} min
               </span>
@@ -130,11 +130,11 @@ export default function SettingsPanel({
               min={1}
               max={30}
               step={1}
-              className="[&_[role=slider]]:bg-[var(--pt-olive-green)]"
+              className="[&_[role=slider]]:bg-[#6B8E23]"
             />
             <div
               className="flex justify-between text-xs opacity-40"
-              style={{ color: "var(--pt-espresso)" }}
+              style={{ color: "#3E2723" }}
             >
               <span>1 min</span>
               <span>30 min</span>
@@ -146,13 +146,13 @@ export default function SettingsPanel({
             <div className="flex justify-between items-center">
               <label
                 className="text-sm font-medium"
-                style={{ color: "var(--pt-espresso)" }}
+                style={{ color: "#3E2723" }}
               >
                 Long Break
               </label>
               <span
                 className="text-sm font-semibold tabular-nums"
-                style={{ color: "var(--pt-olive-green-dark)" }}
+                style={{ color: "#556B2F" }}
               >
                 {localSettings.longBreakMinutes} min
               </span>
@@ -165,11 +165,11 @@ export default function SettingsPanel({
               min={1}
               max={30}
               step={1}
-              className="[&_[role=slider]]:bg-[var(--pt-olive-green-dark)]"
+              className="[&_[role=slider]]:bg-[#556B2F]"
             />
             <div
               className="flex justify-between text-xs opacity-40"
-              style={{ color: "var(--pt-espresso)" }}
+              style={{ color: "#3E2723" }}
             >
               <span>1 min</span>
               <span>30 min</span>
@@ -179,7 +179,7 @@ export default function SettingsPanel({
           {timerState !== "idle" && (
             <p
               className="text-xs italic text-center opacity-60"
-              style={{ color: "var(--pt-espresso)" }}
+              style={{ color: "#3E2723" }}
             >
               Changes will apply to the next session.
             </p>
@@ -193,8 +193,8 @@ export default function SettingsPanel({
           <Button
             onClick={handleSave}
             style={{
-              backgroundColor: "var(--pt-tomato-red)",
-              color: "var(--pt-cream)",
+              backgroundColor: "#C0392B",
+              color: "#FFFDD0",
             }}
           >
             Save
