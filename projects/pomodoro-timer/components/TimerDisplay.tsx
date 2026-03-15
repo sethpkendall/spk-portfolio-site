@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import SplitFlapDigit from "./SplitFlapDigit";
 
 interface TimerDisplayProps {
   timeRemainingMs: number;
@@ -117,14 +118,26 @@ export default function TimerDisplay({
 
       {/* Timer text overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
+        {/* Split-flap digit display */}
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <SplitFlapDigit digit={String(minutes).padStart(2, "0")[0]} />
+          <SplitFlapDigit digit={String(minutes).padStart(2, "0")[1]} />
+          {/* Static colon separator */}
+          <div
+            className="flex flex-col items-center justify-center gap-1 sm:gap-1.5 w-4 sm:w-5 lg:w-6 h-10 sm:h-14 lg:h-16 rounded-md"
+            style={{
+              backgroundColor: "#2C2C2C",
+              boxShadow: "inset 0 1px 4px rgba(0,0,0,0.3)",
+            }}
+          >
+            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#F0EDE6] opacity-90" />
+            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#F0EDE6] opacity-90" />
+          </div>
+          <SplitFlapDigit digit={String(seconds).padStart(2, "0")[0]} />
+          <SplitFlapDigit digit={String(seconds).padStart(2, "0")[1]} />
+        </div>
         <span
-          className="text-5xl sm:text-6xl font-bold tabular-nums tracking-tight"
-          style={{ color: textColor }}
-        >
-          {timeString}
-        </span>
-        <span
-          className="text-sm sm:text-base font-serif mt-1 opacity-70"
+          className="text-sm sm:text-base font-serif mt-2 opacity-70"
           style={{ color: textColor }}
         >
           {phaseLabel}

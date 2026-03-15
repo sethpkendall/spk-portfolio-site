@@ -75,7 +75,7 @@ export default function PomodoroTimer() {
     () => DEFAULT_SETTINGS.workMinutes * 60 * 1000,
   );
   const [completedInCycle, setCompletedInCycle] = useState(0);
-  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationPhase, setCelebrationPhase] = useState<Phase | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [phaseTransition, setPhaseTransition] = useState(false);
 
@@ -212,7 +212,7 @@ export default function PomodoroTimer() {
       setCompletedInCycle(newCount);
 
       // Show celebration
-      setShowCelebration(true);
+      setCelebrationPhase("work");
 
       // Determine next phase after celebration
       if (newCount >= 4) {
@@ -225,8 +225,8 @@ export default function PomodoroTimer() {
         }, 2600);
       }
     } else {
-      // Break completed — subtle transition to work
-      setPhaseTransition(true);
+      // Break completed — show celebration then transition to work
+      setCelebrationPhase(currentPhase);
 
       if (currentPhase === "longBreak") {
         setCompletedInCycle(0);
@@ -234,8 +234,7 @@ export default function PomodoroTimer() {
 
       setTimeout(() => {
         transitionToPhase("work");
-        setPhaseTransition(false);
-      }, 800);
+      }, 2600);
     }
   }, [transitionToPhase, clearTickInterval]);
 
@@ -278,7 +277,7 @@ export default function PomodoroTimer() {
 
   // ── Celebration complete callback ────────────────────────────
   const handleCelebrationComplete = useCallback(() => {
-    setShowCelebration(false);
+    setCelebrationPhase(null);
   }, []);
 
   // ── Settings save handler ────────────────────────────────────
@@ -392,7 +391,8 @@ export default function PomodoroTimer() {
 
       {/* Celebration animation overlay */}
       <CelebrationAnimation
-        isActive={showCelebration}
+        isActive={celebrationPhase !== null}
+        phase={celebrationPhase ?? "work"}
         onComplete={handleCelebrationComplete}
       />
 
@@ -512,6 +512,78 @@ export default function PomodoroTimer() {
           100% {
             transform: scale(0.5);
             opacity: 0;
+          }
+        }
+
+        /* Split-flap: old top flap folds down */
+        .pt-flap-old-top {
+          animation: pt-flap-down 300ms ease-in forwards;
+        }
+        @keyframes pt-flap-down {
+          0% {
+            transform: rotateX(0deg);
+          }
+          100% {
+            transform: rotateX(-90deg);
+          }
+        }
+
+        /* Split-flap: new bottom flap swings up */
+        .pt-flap-new-bottom {
+          animation: pt-flap-up 300ms ease-out 150ms forwards;
+          transform: rotateX(90deg);
+        }
+        @keyframes pt-flap-up {
+          0% {
+            transform: rotateX(90deg);
+          }
+          100% {
+            transform: rotateX(0deg);
+          }
+        }
+
+        /* Italian phrase overlay — fade-in + scale, hold, fade-out */
+        .pt-phrase-overlay {
+          animation: pt-phrase 2.5s ease-out forwards;
+        }
+        @keyframes pt-phrase {
+          0% {
+            opacity: 0;
+            transform: scale(0.6);
+          }
+          16% {
+            opacity: 1;
+            transform: scale(1.05);
+          }
+          24% {
+            transform: scale(1);
+          }
+          76% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+        }
+
+        /* Break end — subtle green pulse */
+        .pt-break-pulse {
+          animation: pt-break-glow 2.5s ease-out forwards;
+        }
+        @keyframes pt-break-glow {
+          0% {
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          30% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(1.2);
           }
         }
       `}</style>

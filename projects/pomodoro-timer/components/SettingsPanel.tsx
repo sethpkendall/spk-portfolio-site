@@ -20,6 +20,20 @@ interface SettingsPanelProps {
   timerState: "idle" | "running" | "paused";
 }
 
+const TEST_MODE_SETTINGS = {
+  workMinutes: 0.05,
+  shortBreakMinutes: 0.033,
+  longBreakMinutes: 0.05,
+};
+
+function isTestMode(s: PomodoroSettings): boolean {
+  return (
+    s.workMinutes < 1 ||
+    s.shortBreakMinutes < 1 ||
+    s.longBreakMinutes < 1
+  );
+}
+
 export default function SettingsPanel({
   settings,
   onSave,
@@ -34,13 +48,29 @@ export default function SettingsPanel({
     setLocalSettings(settings);
   }, [settings]);
 
+  const testModeActive = isTestMode(localSettings);
+
+  function handleTestMode() {
+    setLocalSettings((s) => ({ ...s, ...TEST_MODE_SETTINGS }));
+  }
+
+  function handleExitTestMode() {
+    setLocalSettings((s) => ({
+      ...s,
+      workMinutes: 25,
+      shortBreakMinutes: 5,
+      longBreakMinutes: 15,
+    }));
+  }
+
   function handleSave() {
-    // Clamp values to valid ranges
+    // Clamp values — allow sub-1 values in test mode
+    const minVal = testModeActive ? 0.01 : 1;
     const clamped: PomodoroSettings = {
       ...localSettings,
-      workMinutes: Math.max(1, Math.min(60, localSettings.workMinutes)),
-      shortBreakMinutes: Math.max(1, Math.min(30, localSettings.shortBreakMinutes)),
-      longBreakMinutes: Math.max(1, Math.min(30, localSettings.longBreakMinutes)),
+      workMinutes: Math.max(minVal, Math.min(60, localSettings.workMinutes)),
+      shortBreakMinutes: Math.max(minVal, Math.min(30, localSettings.shortBreakMinutes)),
+      longBreakMinutes: Math.max(minVal, Math.min(30, localSettings.longBreakMinutes)),
     };
     onSave(clamped);
     onClose();
@@ -69,6 +99,33 @@ export default function SettingsPanel({
             Customize your Pomodoro session durations.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Test Mode */}
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={testModeActive ? handleExitTestMode : handleTestMode}
+            className="text-xs font-medium px-3 py-1.5 rounded-full border transition-colors"
+            style={{
+              borderColor: testModeActive ? "#C0392B" : "#5D4037",
+              backgroundColor: testModeActive ? "rgba(192, 57, 43, 0.1)" : "transparent",
+              color: testModeActive ? "#C0392B" : "#5D4037",
+            }}
+          >
+            {testModeActive ? "Exit Test Mode" : "\uD83E\uDDEA Test Mode"}
+          </button>
+          {testModeActive && (
+            <span
+              className="text-xs font-semibold px-2 py-1 rounded-md"
+              style={{
+                backgroundColor: "rgba(192, 57, 43, 0.12)",
+                color: "#C0392B",
+              }}
+            >
+              \u26A1 Test: 3s / 2s / 3s
+            </span>
+          )}
+        </div>
 
         <div className="space-y-6 py-4">
           {/* Work Duration */}
