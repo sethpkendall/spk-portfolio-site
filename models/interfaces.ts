@@ -105,4 +105,6 @@ export interface PomodoroSettings {
     workMinutes: number;
     shortBreakMinutes: number;
     longBreakMinutes: number;
+    skipCountsAsCompleted?: boolean;
+    autoContinue?: boolean;
 }

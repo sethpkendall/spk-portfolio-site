@@ -7,6 +7,7 @@ import type { PomodoroSession, PomodoroSettings } from "@/models/interfaces";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { startOfToday } from "date-fns";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 import TimerDisplay from "./components/TimerDisplay";
 import TimerControls from "./components/TimerControls";
@@ -25,6 +26,8 @@ const DEFAULT_SETTINGS: PomodoroSettings = {
   workMinutes: 25,
   shortBreakMinutes: 5,
   longBreakMinutes: 15,
+  skipCountsAsCompleted: false,
+  autoContinue: true,
 };
 
 function phaseDurationMs(phase: Phase, settings: PomodoroSettings): number {
@@ -64,6 +67,8 @@ export default function PomodoroTimer() {
         workMinutes: dbSettings.workMinutes ?? 25,
         shortBreakMinutes: dbSettings.shortBreakMinutes ?? 5,
         longBreakMinutes: dbSettings.longBreakMinutes ?? 15,
+        skipCountsAsCompleted: dbSettings.skipCountsAsCompleted ?? false,
+        autoContinue: dbSettings.autoContinue ?? true,
       });
     }
   }, [dbSettings]);
@@ -186,12 +191,27 @@ export default function PomodoroTimer() {
     [startTickInterval],
   );
 
+  // ── Phase transition to idle (no auto-start) ────────────────
+  const transitionToPhaseIdle = useCallback(
+    (newPhase: Phase) => {
+      const dur = phaseDurationMs(newPhase, settingsRef.current);
+      setPhase(newPhase);
+      setTimeRemainingMs(dur);
+      timerDurationRef.current = dur;
+      timerElapsedRef.current = 0;
+      timerStartRef.current = 0;
+      setTimerState("idle");
+    },
+    [],
+  );
+
   // ── Phase completion logic ───────────────────────────────────
   const completePhase = useCallback(() => {
     clearTickInterval();
     setTimerState("idle");
 
     const currentPhase = phaseRef.current;
+    const shouldAutoContinue = settingsRef.current.autoContinue !== false;
 
     if (currentPhase === "work") {
       // Persist session to DB
@@ -215,15 +235,14 @@ export default function PomodoroTimer() {
       setCelebrationPhase("work");
 
       // Determine next phase after celebration
-      if (newCount >= 4) {
-        setTimeout(() => {
-          transitionToPhase("longBreak");
-        }, 2600);
-      } else {
-        setTimeout(() => {
-          transitionToPhase("shortBreak");
-        }, 2600);
-      }
+      const nextPhase: Phase = newCount >= 4 ? "longBreak" : "shortBreak";
+      setTimeout(() => {
+        if (shouldAutoContinue) {
+          transitionToPhase(nextPhase);
+        } else {
+          transitionToPhaseIdle(nextPhase);
+        }
+      }, 2600);
     } else {
       // Break completed — show celebration then transition to work
       setCelebrationPhase(currentPhase);
@@ -233,10 +252,14 @@ export default function PomodoroTimer() {
       }
 
       setTimeout(() => {
-        transitionToPhase("work");
+        if (shouldAutoContinue) {
+          transitionToPhase("work");
+        } else {
+          transitionToPhaseIdle("work");
+        }
       }, 2600);
     }
-  }, [transitionToPhase, clearTickInterval]);
+  }, [transitionToPhase, transitionToPhaseIdle, clearTickInterval]);
 
   // Keep completePhaseRef in sync
   completePhaseRef.current = completePhase;
@@ -275,6 +298,47 @@ export default function PomodoroTimer() {
     setTimerState("idle");
   }, [phase, settings, clearTickInterval]);
 
+  // ── Skip handler ─────────────────────────────────────────────
+  const handleSkip = useCallback(() => {
+    clearTickInterval();
+    timerElapsedRef.current = 0;
+    timerStartRef.current = 0;
+
+    const currentPhase = phaseRef.current;
+
+    // If skipping a work session and setting is enabled, count it
+    if (currentPhase === "work" && settingsRef.current.skipCountsAsCompleted) {
+      const durationMinutes = settingsRef.current.workMinutes;
+      if (dbAvailableRef.current) {
+        ptDB.pomodoroSessions
+          .add({
+            completedAt: new Date(),
+            durationMinutes,
+            type: "work",
+          })
+          .catch(() => {});
+      }
+      const newCount = completedRef.current + 1;
+      setCompletedInCycle(newCount);
+
+      // Determine next phase
+      const nextPhase: Phase = newCount >= 4 ? "longBreak" : "shortBreak";
+      transitionToPhaseIdle(nextPhase);
+    } else if (currentPhase === "work") {
+      // Skip without counting — still move to break
+      const nextPhase: Phase = completedRef.current >= 4 ? "longBreak" : "shortBreak";
+      transitionToPhaseIdle(nextPhase);
+    } else {
+      // Break → work
+      if (currentPhase === "longBreak") {
+        setCompletedInCycle(0);
+      }
+      transitionToPhaseIdle("work");
+    }
+
+    setTimerState("idle");
+  }, [clearTickInterval, transitionToPhaseIdle]);
+
   // ── Celebration complete callback ────────────────────────────
   const handleCelebrationComplete = useCallback(() => {
     setCelebrationPhase(null);
@@ -306,10 +370,15 @@ export default function PomodoroTimer() {
 
   // ── Render ───────────────────────────────────────────────────
   const totalDurationMs = phaseDurationMs(phase, settings);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   return (
     <div
-      className="pomodoro-timer relative flex flex-col items-center justify-center px-4 py-8 sm:py-12 min-h-[500px]"
+      className={`pomodoro-timer relative px-4 py-8 sm:py-12 min-h-[500px] ${
+        isDesktop
+          ? "flex flex-row items-start justify-center gap-8 max-w-4xl mx-auto"
+          : "flex flex-col items-center justify-center max-w-md mx-auto"
+      }`}
       style={{
         // Italian color custom properties
         // @ts-expect-error custom CSS properties
@@ -327,67 +396,80 @@ export default function PomodoroTimer() {
         borderRadius: "1rem",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between w-full max-w-md mb-6">
-        <div>
-          <h2
-            className="text-2xl font-serif font-bold"
-            style={{ color: "var(--pt-espresso)" }}
+      {/* Timer column */}
+      <div className={`flex flex-col items-center ${
+        isDesktop ? "flex-[3] min-w-0" : "w-full"
+      }`}>
+        {/* Header */}
+        <div className="flex items-center justify-between w-full max-w-md mb-6">
+          <div>
+            <h2
+              className="text-2xl font-serif font-bold"
+              style={{ color: "var(--pt-espresso)" }}
+            >
+              Pomodoro
+            </h2>
+            <TodaySummary count={todayCount ?? 0} />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowSettings(true)}
+            className="rounded-full"
+            style={{ color: "var(--pt-espresso-light)" }}
           >
-            Pomodoro
-          </h2>
-          <TodaySummary count={todayCount ?? 0} />
+            <Settings className="w-5 h-5" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowSettings(true)}
-          className="rounded-full"
-          style={{ color: "var(--pt-espresso-light)" }}
+
+        {/* DB unavailable warning */}
+        {!dbAvailable && (
+          <div
+            className="text-xs text-center mb-4 px-3 py-1.5 rounded-full opacity-60"
+            style={{
+              backgroundColor: "rgba(62, 39, 35, 0.08)",
+              color: "var(--pt-espresso-light)",
+            }}
+          >
+            Session history unavailable in this browser mode
+          </div>
+        )}
+
+        {/* Timer display with phase transition animation */}
+        <div
+          className={`p-6 sm:p-8 transition-opacity duration-500 ${phaseTransition ? "opacity-40" : "opacity-100"}`}
         >
-          <Settings className="w-5 h-5" />
-        </Button>
+          <TimerDisplay
+            timeRemainingMs={timeRemainingMs}
+            totalDurationMs={totalDurationMs}
+            phase={phase}
+            timerState={timerState}
+          />
+        </div>
+
+        {/* Cycle indicator */}
+        <CycleIndicator completedCount={completedInCycle} phase={phase} />
+
+        {/* Timer controls */}
+        <TimerControls
+          timerState={timerState}
+          onStart={handleStart}
+          onPause={handlePause}
+          onResume={handleResume}
+          onReset={handleReset}
+          onSkip={handleSkip}
+        />
+
+        {/* Session history — mobile only (stacked below timer) */}
+        {!isDesktop && <SessionHistory sessions={sessions ?? []} isDesktop={false} />}
       </div>
 
-      {/* DB unavailable warning */}
-      {!dbAvailable && (
-        <div
-          className="text-xs text-center mb-4 px-3 py-1.5 rounded-full opacity-60"
-          style={{
-            backgroundColor: "rgba(62, 39, 35, 0.08)",
-            color: "var(--pt-espresso-light)",
-          }}
-        >
-          Session history unavailable in this browser mode
+      {/* Session history column — desktop only (right side) */}
+      {isDesktop && (
+        <div className="flex-[2] min-w-0 pt-2">
+          <SessionHistory sessions={sessions ?? []} isDesktop={true} />
         </div>
       )}
-
-      {/* Timer display with phase transition animation */}
-      <div
-        className={`transition-opacity duration-500 ${phaseTransition ? "opacity-40" : "opacity-100"}`}
-      >
-        <TimerDisplay
-          timeRemainingMs={timeRemainingMs}
-          totalDurationMs={totalDurationMs}
-          phase={phase}
-          timerState={timerState}
-        />
-      </div>
-
-      {/* Cycle indicator */}
-      <CycleIndicator completedCount={completedInCycle} phase={phase} />
-
-      {/* Timer controls */}
-      <TimerControls
-        timerState={timerState}
-        onStart={handleStart}
-        onPause={handlePause}
-        onResume={handleResume}
-        onReset={handleReset}
-      />
-
-      {/* Session history */}
-      <SessionHistory sessions={sessions ?? []} />
 
       {/* Celebration animation overlay */}
       <CelebrationAnimation

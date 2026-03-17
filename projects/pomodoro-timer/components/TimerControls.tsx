@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, SkipForward } from "lucide-react";
 
 interface TimerControlsProps {
   timerState: "idle" | "running" | "paused";
@@ -10,6 +10,7 @@ interface TimerControlsProps {
   onPause: () => void;
   onResume: () => void;
   onReset: () => void;
+  onSkip: () => void;
 }
 
 export default function TimerControls({
@@ -18,6 +19,7 @@ export default function TimerControls({
   onPause,
   onResume,
   onReset,
+  onSkip,
 }: TimerControlsProps) {
   return (
     <div className="flex items-center justify-center gap-3 mt-6">
@@ -76,6 +78,21 @@ export default function TimerControls({
         }}
       >
         <RotateCcw className="w-5 h-5" />
+      </Button>
+
+      <Button
+        onClick={onSkip}
+        variant="outline"
+        size="icon"
+        disabled={timerState === "idle"}
+        className="h-12 w-12 rounded-full border-2"
+        style={{
+          borderColor: "var(--pt-espresso)",
+          color: "var(--pt-espresso)",
+          opacity: timerState === "idle" ? 0.3 : 1,
+        }}
+      >
+        <SkipForward className="w-5 h-5" />
       </Button>
     </div>
   );

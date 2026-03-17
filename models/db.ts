@@ -70,6 +70,15 @@ export class PomodoroTimerDB extends Dexie {
             pomodoroSessions: '++id, completedAt, type',
             pomodoroSettings: '++id',
         });
+        this.version(2).stores({
+            pomodoroSessions: '++id, completedAt, type',
+            pomodoroSettings: '++id',
+        }).upgrade(tx => {
+            return tx.table('pomodoroSettings').toCollection().modify(s => {
+                if (s.skipCountsAsCompleted === undefined) s.skipCountsAsCompleted = false;
+                if (s.autoContinue === undefined) s.autoContinue = true;
+            });
+        });
     }
 }
 

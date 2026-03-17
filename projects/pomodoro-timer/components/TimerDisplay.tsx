@@ -59,7 +59,7 @@ export default function TimerDisplay({
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
-        className="w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[320px] lg:h-[320px] drop-shadow-md"
+        className="overflow-visible w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[320px] lg:h-[320px] xl:w-[400px] xl:h-[400px] drop-shadow-md"
       >
         {/* Background circle - cream face */}
         <circle

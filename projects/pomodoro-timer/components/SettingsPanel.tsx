@@ -34,6 +34,25 @@ function isTestMode(s: PomodoroSettings): boolean {
   );
 }
 
+/**
+ * SettingsPanel component provides a modal dialog for customizing Pomodoro timer settings.
+ * 
+ * This panel allows users to adjust the durations for work sessions, short breaks, and long breaks
+ * using interactive sliders. It also includes a "Test Mode" feature for quickly setting very short
+ * timer durations, useful for development or demonstration purposes. The component ensures that
+ * changes are only applied after the user clicks "Save", and notifies the user if changes will only
+ * take effect in the next session (when the timer is not idle).
+ * 
+ * Props:
+ * - `settings`: The current Pomodoro timer settings to display and edit.
+ * - `onSave`: Callback invoked with the new settings when the user saves changes.
+ * - `isOpen`: Controls whether the settings dialog is visible.
+ * - `onClose`: Callback invoked to close the dialog.
+ * - `timerState`: The current state of the timer, used to display informational messages.
+ * 
+ * This component is intended to be rendered as part of a Pomodoro timer application UI, and is not
+ * meant to be rendered directly to the end user outside of such a context.
+ */
 export default function SettingsPanel({
   settings,
   onSave,
@@ -112,7 +131,7 @@ export default function SettingsPanel({
               color: testModeActive ? "#C0392B" : "#5D4037",
             }}
           >
-            {testModeActive ? "Exit Test Mode" : "\uD83E\uDDEA Test Mode"}
+            {testModeActive ? "Exit Test Mode" : "\uD83E\uDDEA Transition Test Mode"}
           </button>
           {testModeActive && (
             <span
@@ -122,7 +141,7 @@ export default function SettingsPanel({
                 color: "#C0392B",
               }}
             >
-              \u26A1 Test: 3s / 2s / 3s
+              ⚡ Test durations: 3s / 2s / 3s
             </span>
           )}
         </div>
@@ -241,6 +260,78 @@ export default function SettingsPanel({
               Changes will apply to the next session.
             </p>
           )}
+
+          {/* Toggle: Skip counts as completed */}
+          <div className="flex items-center justify-between">
+            <label
+              className="text-sm font-medium"
+              style={{ color: "#3E2723" }}
+            >
+              Count skipped sessions as completed
+            </label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={localSettings.skipCountsAsCompleted ?? false}
+              onClick={() =>
+                setLocalSettings((s) => ({
+                  ...s,
+                  skipCountsAsCompleted: !s.skipCountsAsCompleted,
+                }))
+              }
+              className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                backgroundColor: localSettings.skipCountsAsCompleted
+                  ? "#6B8E23"
+                  : "#5D4037",
+              }}
+            >
+              <span
+                className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
+                style={{
+                  transform: localSettings.skipCountsAsCompleted
+                    ? "translateX(1.25rem)"
+                    : "translateX(0)",
+                }}
+              />
+            </button>
+          </div>
+
+          {/* Toggle: Auto continue after sessions */}
+          <div className="flex items-center justify-between">
+            <label
+              className="text-sm font-medium"
+              style={{ color: "#3E2723" }}
+            >
+              Auto continue after sessions?
+            </label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={localSettings.autoContinue !== false}
+              onClick={() =>
+                setLocalSettings((s) => ({
+                  ...s,
+                  autoContinue: s.autoContinue === false ? true : false,
+                }))
+              }
+              className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                backgroundColor:
+                  localSettings.autoContinue !== false ? "#6B8E23" : "#5D4037",
+              }}
+            >
+              <span
+                className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
+                style={{
+                  transform:
+                    localSettings.autoContinue !== false
+                      ? "translateX(1.25rem)"
+                      : "translateX(0)",
+                }}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2">
