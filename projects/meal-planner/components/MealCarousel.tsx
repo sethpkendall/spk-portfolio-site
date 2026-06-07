@@ -1,107 +1,134 @@
-import {useContext} from 'react';
-// Component imports
-import { Badge } from '@/components/ui/badge';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusIcon } from '@radix-ui/react-icons'
-import { Apple, Pencil, Trash2Icon } from 'lucide-react';
-// Logic imports
-import { MealContext } from '@/contexts/MealContext';
-import { Meal } from '@/models/interfaces';
-import {localeFormat} from 'light-date';
-import { mpDB } from '@/models/db';
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { Meal } from "@/models/interfaces";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { localeFormat } from "light-date";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import MealCard from "./MealCard";
+import { MEAL_TYPES } from "./mealPlannerData";
+import { WeekMealState } from "./types";
 
 type MealCarouselProps = {
-    meals: {
-        [key: string]: {
-            breakfast: Meal;
-            lunch: Meal;
-            dinner: Meal;
-        }
+  meals: WeekMealState;
+  onAdd: (dayString: string, mealType: string) => void;
+  onEdit: (meal: Meal) => void;
+  weekDateStrings: string[];
+};
+
+export default function MealCarousel({
+  meals,
+  onAdd,
+  onEdit,
+  weekDateStrings,
+}: MealCarouselProps) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentDay, setCurrentDay] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+
+  const syncCarouselState = useCallback((carouselApi: CarouselApi) => {
+    if (!carouselApi) return;
+    setCurrentDay(carouselApi.selectedScrollSnap());
+    setCanScrollPrev(carouselApi.canScrollPrev());
+    setCanScrollNext(carouselApi.canScrollNext());
+  }, []);
+
+  useEffect(() => {
+    if (!api) return;
+
+    syncCarouselState(api);
+    api.on("select", syncCarouselState);
+    api.on("reInit", syncCarouselState);
+
+    return () => {
+      api.off("select", syncCarouselState);
+      api.off("reInit", syncCarouselState);
     };
-    setShowModal: (value:boolean) => void;
-    setShowEditModal: (value:boolean) => void;
-    weekDateStrings: string[];
-};
+  }, [api, syncCarouselState]);
 
-const MealCarousel: React.FC<MealCarouselProps> = ({meals,setShowEditModal,setShowModal,weekDateStrings}:MealCarouselProps) => {
-    const {
-        mealState,
-        setMealState
-      } = useContext(MealContext);
+  const activeDayString = weekDateStrings[currentDay] ?? weekDateStrings[0];
 
-    const addClick = (dayString:string, mealType:string) => {
-        setMealState({
-            title: '',
-            date: new Date(dayString),
-            type: mealType,
-            id: undefined
-        });
-        setShowModal(true);
-    }
+  return (
+    <div className="w-full">
+      <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => api?.scrollPrev()}
+          disabled={!canScrollPrev}
+          aria-label="Previous day"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
 
-    const editClick = (meal:Meal) => {
-        setMealState({...meal, id: meal.id || undefined, date: meal.date || null});
-        setShowEditModal(true);
-    }
-
-    const deleteClick = async (meal:Meal) => {
-        await mpDB.meals.delete(meal.id || 0);
-    }
-
-    return (
-        <div>
-            <Carousel>
-                <CarouselContent>
-                    {meals && weekDateStrings.map((dayString) => {
-                        const currDayMealData = meals[dayString];
-                        if(!currDayMealData) {
-                            return false;
-                        }
-                        return (
-                            <CarouselItem>
-                                    <div className="mb-1 flex flex-col justify-center items-center text-sm font-bold">
-                                        <p className='weekdayText'>{localeFormat(new Date(dayString),"{EEE}")}</p>
-                                        <p className='weekdayText'>{`${localeFormat(new Date(dayString),"{MMM}")} ${dayString.split('-')[1]}`}</p>
-                                    </div>
-                                    {Object.keys(currDayMealData).map((mealType, index) => {
-                                        const meal = currDayMealData[mealType as keyof typeof currDayMealData];
-                                        return (
-                                            <Card className='h-[26%] mb-4 p-4 relative'>
-                                                <CardHeader>
-                                                    <CardTitle>{mealType}</CardTitle>
-                                                </CardHeader>
-                                                { !meal &&
-                                                    <div className="mobileAddBtn hover:cursor-pointer absolute bottom-5 right-5 p-2 rounded-full bg-primary text-white  z-10 text-6xl font-semibold" onClick={(e)=>addClick(dayString, mealType)}>
-                                                        <PlusIcon />
-                                                    </div>
-                                                }
-                                                {meal &&
-                                                    <>
-                                                        <Badge className='group flex flex-row text-center justify-between'>
-                                                            <p>{meal.title}</p>
-                                                            <div className='buttonParent flex space-around justify-end p-1'>
-                                                                <Pencil size={20} strokeWidth={1} className="group-hover:cursor-pointer hover:scale-110 mr-3" onClick={(e)=>editClick(meal)} />
-                                                                <Trash2Icon size={20} strokeWidth={1} className="group-hover:cursor-pointer hover:scale-110 mr-3" onClick={()=>deleteClick(meal)}/>
-                                                            </div>
-                                                        </Badge>
-                                                    </>
-                                                }
-                                                <CardContent>
-                                                </CardContent>
-                                            </Card>
-                                        )
-                                    })}
-                            </CarouselItem>
-                        )
-                    })}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
+        <div className="min-w-0 text-center">
+          <p className="text-sm font-bold text-slate-900">
+            {localeFormat(new Date(activeDayString), "{EEEE}")}, {localeFormat(new Date(activeDayString), "{MMM}")}{" "}
+            {activeDayString.split("-")[1]}
+          </p>
+          <div className="mt-2 flex justify-center gap-1" aria-label={`Day ${currentDay + 1} of ${weekDateStrings.length}`}>
+            {weekDateStrings.map((dayString, index) => (
+              <button
+                key={dayString}
+                type="button"
+                className={`h-1.5 rounded-full transition-all ${
+                  index === currentDay ? "w-5 bg-blue-500" : "w-1.5 bg-slate-300"
+                }`}
+                onClick={() => api?.scrollTo(index)}
+                aria-label={`Go to day ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-    );
-};
 
-export default MealCarousel;
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => api?.scrollNext()}
+          disabled={!canScrollNext}
+          aria-label="Next day"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
 
+      <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full">
+      <CarouselContent>
+        {weekDateStrings.map((dayString) => {
+          const currDayMealData = meals[dayString];
+          if (!currDayMealData) return null;
+
+          return (
+            <CarouselItem key={dayString}>
+              <div className="space-y-3">
+                {MEAL_TYPES.map((mealType) => (
+                  <div key={`${dayString}-${mealType}`}>
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{mealType}</p>
+                    <MealCard
+                      dayString={dayString}
+                      meal={currDayMealData[mealType]}
+                      mealType={mealType}
+                      onAdd={onAdd}
+                      onEdit={onEdit}
+                    />
+                  </div>
+                ))}
+              </div>
+            </CarouselItem>
+          );
+        })}
+      </CarouselContent>
+      </Carousel>
+
+      <p className="mt-3 text-center text-xs text-slate-500">
+        {canScrollNext || canScrollPrev ? "Swipe or use the arrows to view more days" : "Current day"}
+      </p>
+    </div>
+  );
+}

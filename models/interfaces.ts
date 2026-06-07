@@ -3,17 +3,50 @@ export interface Meal {
     title:string;
     date?:Date;
     type:string;
+    instructions?: string;
     foods?:Food[];
+    ingredients?: MealIngredient[];
 }
 
 export interface Food {
     id?:number;
     title:string;
+    normalizedTitle?: string;
 }
 
 export interface Recipe {
+    id?: number;
     mealId:number;
     foodId:number;
+    quantity?: number;
+    unit?: string;
+    sortOrder?: number;
+}
+
+export interface MealIngredient {
+    recipeId?: number;
+    foodId?: number;
+    title: string;
+    normalizedTitle?: string;
+    quantity: number;
+    unit: string;
+    sortOrder?: number;
+}
+
+export interface GroceryListItem {
+    id?: number;
+    weekStart: string;
+    sourceKey?: string;
+    foodId?: number;
+    title: string;
+    normalizedTitle: string;
+    quantity?: number;
+    unit?: string;
+    checked: boolean;
+    removed?: boolean;
+    isFreeform: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Session {

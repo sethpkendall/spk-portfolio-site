@@ -1,18 +1,40 @@
 import Dexie, { type Table } from 'dexie';
 import { gkPopulate, mpPopulate } from './populate';
-import { Meal, Food, Recipe, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem, PomodoroSession, PomodoroSettings } from './interfaces';
+import { Meal, Food, Recipe, GroceryListItem, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem, PomodoroSession, PomodoroSettings } from './interfaces';
 
 
 export class MealPlannerDB extends Dexie {
     meals!: Table<Meal, number>
     foods!: Table<Food, number>
     recipes!: Table<Recipe, number>
+    groceryListItems!: Table<GroceryListItem, number>
     constructor() {
         super('MealPlannerDB');
         this.version(3).stores({
             meals: '++id, title, date',
             foods:'++id, title',
             recipes: 'mealId, foodId'
+        });
+        // The v3 recipes table used mealId as its primary key. IndexedDB cannot
+        // change a primary key in place, so remove the previously unused table
+        // in v4 and recreate it with an auto-incrementing key in v5.
+        this.version(4).stores({
+            meals: '++id, title, date, type',
+            foods: '++id, title, normalizedTitle',
+            recipes: null,
+            groceryListItems: '++id, weekStart, sourceKey, [weekStart+sourceKey], isFreeform'
+        }).upgrade(tx => {
+            return tx.table('foods').toCollection().modify(food => {
+                if (!food.normalizedTitle && food.title) {
+                    food.normalizedTitle = String(food.title).trim().toLowerCase().replace(/\s+/g, ' ');
+                }
+            });
+        });
+        this.version(5).stores({
+            meals: '++id, title, date, type',
+            foods: '++id, title, normalizedTitle',
+            recipes: '++id, mealId, foodId, [mealId+foodId]',
+            groceryListItems: '++id, weekStart, sourceKey, [weekStart+sourceKey], isFreeform'
         });
     }
 }

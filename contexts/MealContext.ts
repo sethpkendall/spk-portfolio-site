@@ -1,11 +1,13 @@
 import { Meal } from '@/models/interfaces';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext } from 'react';
+
+type MealContextState = Omit<Meal, "date"> & {
+    date: Date | undefined | null;
+};
 
 type MealContextType = {
-    mealState: {
-        id: number | undefined;title: string, date: Date | undefined | null, type: string
-};
-    setMealState: (value:{id: number | undefined; title: string; date: Date | undefined | null; type: string;}) => void;
+    mealState: MealContextState;
+    setMealState: (value: MealContextState) => void;
 };
 
 export const MealContext = createContext<MealContextType>({} as MealContextType);

@@ -1,6 +1,5 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeftCircle, ChevronRightCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {format, localeFormat} from 'light-date';
 
 
@@ -26,14 +25,17 @@ export default function WeekPager ({shownWeek,setShownWeek}:WeekPagerProps): JSX
     }
 
     return (
-        <div className='flex justify-center items-center '>
-            <Button variant="default" onClick={()=>setShownWeek(priorWeekStart)}>
-                <ChevronLeftCircle/>
+        <div className="mb-5 flex items-center justify-between border-b border-slate-200 pb-4">
+            <Button variant="outline" size="sm" onClick={()=>setShownWeek(priorWeekStart)} aria-label="Previous week">
+                <ChevronLeft className="h-4 w-4"/>
             </Button>
-            <p className="mx-4 font-bold">{pagerDateRange()}</p>
-            <Button variant="default" onClick={()=>setShownWeek(nextWeekStart)}>
-                <ChevronRightCircle/>
+            <div className="text-center">
+                <p className="text-xs font-semibold uppercase text-slate-500">Meal plan</p>
+                <p className="font-bold text-slate-900">{pagerDateRange()}</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={()=>setShownWeek(nextWeekStart)} aria-label="Next week">
+                <ChevronRight className="h-4 w-4"/>
             </Button>
         </div>
     );
-};
+}

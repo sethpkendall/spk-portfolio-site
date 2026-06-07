@@ -1,116 +1,158 @@
-"use client"
-import { useEffect, useState } from 'react';
-import { MealContext } from '@/contexts/MealContext';
-import { createPortal } from 'react-dom';
+"use client";
+
+import { useEffect, useState } from "react";
+import { MealContext } from "@/contexts/MealContext";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { mpDB } from "@/models/db";
-import { start } from 'repl';
-import { getWeekDateStrings } from '@/lib/utils';
-import { set } from 'date-fns';
-import { de } from 'date-fns/locale';
-import { Meal } from '@/models/interfaces';
-// component imports
+import { getWeekDateStrings } from "@/lib/utils";
+import { Meal } from "@/models/interfaces";
 import MealPlannerTool from "./components/MealPlannerTool";
 import AddMealModal from "./components/AddMealModal";
 import EditMealModal from "./components/EditMealModal";
-//type imports
-import { ObjectType } from 'typescript';
+import GroceryListDialog from "./components/GroceryListDialog";
+import {
+  createEmptyWeekState,
+  dateKey,
+  getWeekBounds,
+  hydrateMeal,
+  hydrateMeals,
+} from "./components/mealPlannerData";
+import { MealOption, MealSlot, WeekMealState } from "./components/types";
 
+function getCurrentWeekStart(): Date {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - today.getDay());
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
 
 export default function MealPlanner() {
-  const [shownWeek, setShownWeek] = useState(new Date(new Date(new Date().setDate(new Date().getDate() - new Date().getDay())).setHours(0,0,0,0)));
+  const [shownWeek, setShownWeek] = useState(getCurrentWeekStart());
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [dayCount, setDayCount] = useState(0);
-  const [weekMealState, setWeekMealState] = useState({});
-  const [uniqueMealsDatabase, setUniqueMealsDatabase] = useState<{ label: string; value: Meal; }[]>([]);
-  const [mealState, setMealState] = useState<{
-      id: number | undefined; title: string; date: Date | undefined | null; type: string;
-  }>({
-      id: undefined,
-      title: '',
-      date: null,
-      type: ''
+  const [showGroceryList, setShowGroceryList] = useState(false);
+  const [weekMealState, setWeekMealState] = useState<WeekMealState>(
+    createEmptyWeekState(getWeekDateStrings(getCurrentWeekStart()))
+  );
+  const [uniqueMealsDatabase, setUniqueMealsDatabase] = useState<MealOption[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [mealState, setMealState] = useState<MealSlot>({
+    id: undefined,
+    title: "",
+    date: null,
+    type: "",
+    ingredients: [],
   });
 
   useLiveQuery(async () => {
-    // store all meals in state
-    const allMeals = await mpDB.meals.toArray();
-    const allMealsDB:{label:string,value:Meal}[] = [];
-    let uniqueMealsDB:{label:string,value:Meal}[] = [];
-    allMeals.forEach((meal) => {
-      allMealsDB.push({label: meal.title, value: meal});
-      if(!uniqueMealsDB.some((dbMeal) => dbMeal.label === meal.title)) {
-        uniqueMealsDB.push({label: meal.title, value: meal});
-      }
-    });
-    // alphabetize uniqueMealsDB
-    uniqueMealsDB = uniqueMealsDB.sort((a, b) => a.label.localeCompare(b.label));
-    setUniqueMealsDatabase(uniqueMealsDB);
-    // get meals for this week
-    const startDate = shownWeek;
-    const endDate = new Date(new Date(new Date().setDate(new Date(startDate).getDate() + (6 - new Date(startDate).getDay()))).setHours(23,59));
-    const currentWeekMealState: { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } } = {} as { [key: string]: { breakfast: Meal | null, lunch: Meal | null, dinner: Meal | null, [key: string]: Meal | null } };
-    // create 7 needed date keys
-    const weekDateStrings = getWeekDateStrings(startDate);
-    for(const currentDateString of weekDateStrings) {
-      currentWeekMealState[currentDateString] = {
-        breakfast: null,
-        lunch: null,
-        dinner: null,
-      };
-    }
-    // iterate meal results
-    const meals = await mpDB.meals.where("date").between(startDate, endDate, true, true).toArray();
-    for(const meal of meals) {
-      const mealDate = meal.date ? new Date(meal.date) : null;
-      if(mealDate && mealDate >= startDate && mealDate < endDate) {
-        const mealDateString = `${mealDate.getMonth()+1}-${mealDate.getDate()}-${mealDate.getFullYear()}`;
-        if(!currentWeekMealState[mealDateString]) {
-          break;
-        }
-        currentWeekMealState[mealDateString as keyof ObjectType][meal.type.toLowerCase() ] = meal;
-      }
-    }
-    setWeekMealState(currentWeekMealState);
-  }, [shownWeek]);
-  useEffect(() => {
-    if(window.innerWidth <= 768){
-      setDayCount(1);
-    } else {
-      setDayCount(7);
-    }
-  }, []);
+    try {
+      setIsLoading(true);
+      setLoadError(null);
+      const allMeals = await mpDB.meals.toArray();
+      let uniqueMealsDB: MealOption[] = [];
 
-  return ( 
+      for (const meal of allMeals) {
+        if (!uniqueMealsDB.some((dbMeal) => dbMeal.label === meal.title)) {
+          uniqueMealsDB.push({ label: meal.title, value: meal });
+        }
+      }
+
+      uniqueMealsDB = uniqueMealsDB.sort((a, b) => a.label.localeCompare(b.label));
+      setUniqueMealsDatabase(uniqueMealsDB);
+
+      const { startDate, endDate } = getWeekBounds(shownWeek);
+      const currentWeekMealState = createEmptyWeekState(getWeekDateStrings(startDate));
+      const meals = await mpDB.meals.where("date").between(startDate, endDate, true, true).toArray();
+      const hydratedMeals = await hydrateMeals(meals);
+
+      for (const meal of hydratedMeals) {
+        const mealDate = meal.date ? new Date(meal.date) : null;
+        const mealType = meal.type.toLowerCase();
+
+        if (!mealDate || !(mealType === "breakfast" || mealType === "lunch" || mealType === "dinner")) {
+          continue;
+        }
+
+        const mealDateString = dateKey(mealDate);
+        if (currentWeekMealState[mealDateString]) {
+          currentWeekMealState[mealDateString][mealType] = meal;
+        }
+      }
+
+      setWeekMealState(currentWeekMealState);
+    } catch (error) {
+      console.error("Unable to load meal planner data", error);
+      setLoadError(error instanceof Error ? error.message : "Unable to load meal planner data.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [shownWeek]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setWeekMealState(createEmptyWeekState(getWeekDateStrings(shownWeek)));
+  }, [shownWeek]);
+
+  const setActiveMealSlot = (dayString: string, mealType: string) => {
+    setMealState({
+      id: undefined,
+      title: "",
+      date: new Date(dayString),
+      type: mealType,
+      ingredients: [],
+    });
+  };
+
+  const setActiveMealForEdit = async (meal: Meal) => {
+    const hydratedMeal = meal.id ? await hydrateMeal(meal) : meal;
+    setMealState({
+      ...hydratedMeal,
+      id: hydratedMeal.id,
+      date: hydratedMeal.date || null,
+      type: hydratedMeal.type,
+      ingredients: hydratedMeal.ingredients || [],
+    });
+  };
+
+  return (
     <div className="w-full min-h-[500px]">
-      <MealContext.Provider value={{mealState, setMealState: (value: {id: number | undefined; title: string; date: Date | undefined | null; type: string;}) => setMealState(value)}}>
+      {loadError && (
+        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          Meal planner data could not load: {loadError}
+        </div>
+      )}
+      <MealContext.Provider value={{ mealState, setMealState }}>
         <MealPlannerTool
           meals={weekMealState}
-          dayCount={dayCount}
+          isDesktop={isDesktop}
+          isLoading={isLoading}
           shownWeek={shownWeek}
           setShownWeek={setShownWeek}
           setShowModal={setShowModal}
           setShowEditModal={setShowEditModal}
+          setActiveMealSlot={setActiveMealSlot}
+          setActiveMealForEdit={setActiveMealForEdit}
+          onOpenGroceryList={() => setShowGroceryList(true)}
         />
-        <div>
-        {showModal && createPortal(
-          <AddMealModal
-            uniqueMealsDatabase={uniqueMealsDatabase}
-            showModal={showModal}
-            setShowModal={setShowModal}
-          />,
-          document.body
-        )}
-        {showEditModal && createPortal(
-          <EditMealModal
-            uniqueMealsDatabase={uniqueMealsDatabase}
-            showEditModal={showEditModal}
-            setShowEditModal={setShowEditModal}
-          />,
-          document.body
-        )}
-        </div>
+        <AddMealModal
+          uniqueMealsDatabase={uniqueMealsDatabase}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+        <EditMealModal
+          uniqueMealsDatabase={uniqueMealsDatabase}
+          showEditModal={showEditModal}
+          setShowEditModal={setShowEditModal}
+        />
+        <GroceryListDialog
+          open={showGroceryList}
+          onOpenChange={setShowGroceryList}
+          shownWeek={shownWeek}
+        />
       </MealContext.Provider>
     </div>
   );

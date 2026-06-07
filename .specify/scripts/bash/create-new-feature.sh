@@ -129,9 +129,10 @@ get_highest_from_branches() {
 # Function to check existing branches (local and remote) and return next available number
 check_existing_branches() {
     local specs_dir="$1"
+    local repo_root="$2"
 
-    # Fetch all remotes to get latest branch info (suppress errors if no remotes)
-    git fetch --all --prune 2>/dev/null || true
+    # Fetch all remotes to get latest branch info (suppress all output)
+    git fetch --all --prune >/dev/null 2>&1 || true
 
     # Get highest number from ALL branches (not just matching short name)
     local highest_branch=$(get_highest_from_branches)
@@ -139,10 +140,17 @@ check_existing_branches() {
     # Get highest number from ALL specs (not just matching short name)
     local highest_spec=$(get_highest_from_specs "$specs_dir")
 
-    # Take the maximum of both
+    # Also check .specify/memory/ for archived features to avoid reusing numbers
+    local memory_dir="$repo_root/.specify/memory"
+    local highest_memory=$(get_highest_from_specs "$memory_dir")
+
+    # Take the maximum of all three sources
     local max_num=$highest_branch
     if [ "$highest_spec" -gt "$max_num" ]; then
         max_num=$highest_spec
+    fi
+    if [ "$highest_memory" -gt "$max_num" ]; then
+        max_num=$highest_memory
     fi
 
     # Return next number
@@ -238,10 +246,15 @@ fi
 if [ -z "$BRANCH_NUMBER" ]; then
     if [ "$HAS_GIT" = true ]; then
         # Check existing branches on remotes
-        BRANCH_NUMBER=$(check_existing_branches "$SPECS_DIR")
+        BRANCH_NUMBER=$(check_existing_branches "$SPECS_DIR" "$REPO_ROOT")
     else
-        # Fall back to local directory check
-        HIGHEST=$(get_highest_from_specs "$SPECS_DIR")
+        # Fall back to local directory check (also check memory for archived features)
+        HIGHEST_SPECS=$(get_highest_from_specs "$SPECS_DIR")
+        HIGHEST_MEMORY=$(get_highest_from_specs "$REPO_ROOT/.specify/memory")
+        HIGHEST=$HIGHEST_SPECS
+        if [ "$HIGHEST_MEMORY" -gt "$HIGHEST" ]; then
+            HIGHEST=$HIGHEST_MEMORY
+        fi
         BRANCH_NUMBER=$((HIGHEST + 1))
     fi
 fi

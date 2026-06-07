@@ -1,53 +1,56 @@
-import MealGridPanel from './MealGridPanel';
-import { Meal } from '@/models/interfaces';
-import {localeFormat} from 'light-date';
+import { Meal } from "@/models/interfaces";
+import { localeFormat } from "light-date";
+import MealCard from "./MealCard";
+import { MEAL_TYPES } from "./mealPlannerData";
+import { WeekMealState } from "./types";
 
 type MealGridProps = {
-    meals: {
-        [key: string]: {
-            breakfast: Meal;
-            lunch: Meal;
-            dinner: Meal;
-        }
-    };
-    setShowModal: (value:boolean) => void;
-    setShowEditModal: (value:boolean) => void;
-    weekDateStrings: string[];
+  meals: WeekMealState;
+  onAdd: (dayString: string, mealType: string) => void;
+  onEdit: (meal: Meal) => void;
+  weekDateStrings: string[];
 };
 
-export default function MealGrid({meals,setShowEditModal,setShowModal,weekDateStrings}:MealGridProps){
-    return (
-        <div className="flex flex-row h-full">
-            <div className="dayParent mx-1">
-                <div className='spaceDiv h-12 md:h-16 mb-1'></div>
-                <div className='h-20 md:h-[120px] mb-4 flex items-center font-bold'>Breakfast</div>
-                <div className='h-20 md:h-[120px] mb-4 flex items-center font-bold'>Lunch</div>
-                <div className='h-20 md:h-[120px] mb-4 flex items-center font-bold'>Dinner</div>
+export default function MealGrid({
+  meals,
+  onAdd,
+  onEdit,
+  weekDateStrings,
+}: MealGridProps) {
+  return (
+    <div className="flex min-w-0 flex-row">
+      <div className="dayParent mx-1 w-24 shrink-0">
+        <div className="mb-1 h-12 md:h-16" />
+        {MEAL_TYPES.map((mealType) => (
+          <div key={mealType} className="mb-4 flex min-h-28 items-center font-bold capitalize md:min-h-[120px]">
+            {mealType}
+          </div>
+        ))}
+      </div>
+
+      {weekDateStrings.map((dayString) => {
+        const currDayMealData = meals[dayString];
+        if (!currDayMealData) return null;
+
+        return (
+          <div className="dayParent mx-1 min-w-0 flex-1" key={dayString}>
+            <div className="mb-1 flex h-12 flex-col items-center justify-center text-sm font-bold md:h-16">
+              <p className="weekdayText">{localeFormat(new Date(dayString), "{EEE}")}</p>
+              <p className="weekdayText">{`${localeFormat(new Date(dayString), "{MMM}")} ${dayString.split("-")[1]}`}</p>
             </div>
-        {meals && weekDateStrings.map((dayString,dayIndex) => {
-            const currDayMealData = meals[dayString];
-            if(!currDayMealData) {
-                return false;
-            }
-            return (
-                <div className="dayParent flex-1 mx-1" key={dayIndex}>
-                    <div className="h-12 md:h-16 mb-1 flex flex-col justify-center items-center text-sm font-bold">
-                        <p className='weekdayText'>{localeFormat(new Date(dayString),"{EEE}")}</p>
-                        <p className='weekdayText'>{`${localeFormat(new Date(dayString),"{MMM}")} ${dayString.split('-')[1]}`}</p>
-                    </div>
-                    {Object.keys(currDayMealData).map((mealType, index) => {
-                        const meal = currDayMealData[mealType as keyof typeof currDayMealData];
-                        return (
-                            <>
-                                <MealGridPanel dayString={dayString} meal={meal} mealType={mealType} key={index} setShowEditModal={setShowEditModal} setShowModal={setShowModal}/>
-                            </>
-                            
-                            
-                        )
-                    })}
-                </div> 
-            )
-        })}
-        </div>
-    );
-};
+            {MEAL_TYPES.map((mealType) => (
+              <MealCard
+                key={`${dayString}-${mealType}`}
+                dayString={dayString}
+                meal={currDayMealData[mealType]}
+                mealType={mealType}
+                onAdd={onAdd}
+                onEdit={onEdit}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}

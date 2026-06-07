@@ -92,42 +92,48 @@ export function ProjectLayout({ metadata, children, code, codeFiles }: ProjectLa
       {/* Tab Navigation */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex gap-6">
+          <nav className="grid grid-cols-3 sm:flex sm:gap-6">
             <button
               onClick={() => setActiveTab('demo')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              aria-label="Live Demo"
+              className={`flex min-w-0 items-center justify-center gap-1.5 px-1 py-3 text-sm border-b-2 transition-colors sm:gap-2 sm:px-4 ${
                 activeTab === 'demo'
                   ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              <Play className="w-4 h-4" />
-              Live Demo
+              <Play className="h-4 w-4 shrink-0" />
+              <span className="sm:hidden">Demo</span>
+              <span className="hidden sm:inline">Live Demo</span>
             </button>
             {(code || codeFiles) && (
               <button
                 onClick={() => setActiveTab('code')}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                aria-label="Source Code"
+                className={`flex min-w-0 items-center justify-center gap-1.5 px-1 py-3 text-sm border-b-2 transition-colors sm:gap-2 sm:px-4 ${
                   activeTab === 'code'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
-                <Code className="w-4 h-4" />
-                Source Code
+                <Code className="h-4 w-4 shrink-0" />
+                <span className="sm:hidden">Code</span>
+                <span className="hidden sm:inline">Source Code</span>
               </button>
             )}
             {metadata.documentation && (
               <button
                 onClick={() => setActiveTab('docs')}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                aria-label="Documentation"
+                className={`flex min-w-0 items-center justify-center gap-1.5 px-1 py-3 text-sm border-b-2 transition-colors sm:gap-2 sm:px-4 ${
                   activeTab === 'docs'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
-                <FileText className="w-4 h-4" />
-                Documentation
+                <FileText className="h-4 w-4 shrink-0" />
+                <span className="sm:hidden">Docs</span>
+                <span className="hidden sm:inline">Documentation</span>
               </button>
             )}
           </nav>
@@ -137,7 +143,7 @@ export function ProjectLayout({ metadata, children, code, codeFiles }: ProjectLa
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'demo' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden sm:p-6">
             {children}
           </div>
         )}

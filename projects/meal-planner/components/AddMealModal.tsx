@@ -1,88 +1,159 @@
-import {useContext, useState} from 'react';
-import{ MealCombobox } from './MealCombobox';
-import { MealContext } from '@/contexts/MealContext';
-import { getWeekdayString } from '@/lib/utils';
-import { mpDB } from '@/models/db';
-import { Meal } from '@/models/interfaces';
+"use client";
+
+import { useContext, useEffect, useMemo, useState } from "react";
+import { MealContext } from "@/contexts/MealContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { getWeekdayString } from "@/lib/utils";
+import { Meal } from "@/models/interfaces";
+import { IngredientDraft, MealOption } from "./types";
+import IngredientEditor from "./IngredientEditor";
+import { MealCombobox } from "./MealCombobox";
+import ResponsiveMealDialog from "./ResponsiveMealDialog";
+import {
+  createBlankIngredientDraft,
+  draftToIngredient,
+  findLatestMealByTitle,
+  ingredientToDraft,
+  saveMealWithIngredients,
+} from "./mealPlannerData";
 
 type AddMealModalProps = {
-    showModal: boolean;
-    setShowModal: (showModal:boolean) => void;
-    uniqueMealsDatabase: {label: string, value: Meal}[];
+  showModal: boolean;
+  setShowModal: (showModal: boolean) => void;
+  uniqueMealsDatabase: MealOption[];
 };
 
-export default function AddMealModal({showModal,setShowModal,uniqueMealsDatabase}:AddMealModalProps){
-    const [selectedMeal, setSelectedMeal] = useState<{label: string, value: Meal} | null>(
-        null
+export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatabase }: AddMealModalProps) {
+  const { mealState } = useContext(MealContext);
+  const [selectedMeal, setSelectedMeal] = useState<MealOption | null>(null);
+  const [mealTitle, setMealTitle] = useState("");
+  const [commandInputValue, setCommandInputValue] = useState("");
+  const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
+  const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const dialogTitle = useMemo(() => {
+    const mealType = mealState.type ? mealState.type.charAt(0).toUpperCase() + mealState.type.slice(1) : "Meal";
+    return `Add Meal for ${getWeekdayString(mealState.date || undefined)} ${mealType}`;
+  }, [mealState.date, mealState.type]);
+
+  useEffect(() => {
+    if (!showModal) return;
+
+    setSelectedMeal(null);
+    setMealTitle("");
+    setCommandInputValue("");
+    setIngredients([createBlankIngredientDraft()]);
+    setFeedbackMsgState(null);
+  }, [mealState.date, mealState.type, showModal]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSelectedMeal() {
+      if (!selectedMeal) return;
+
+      setMealTitle(selectedMeal.label);
+      const mealWithIngredients = await findLatestMealByTitle(selectedMeal.label);
+      if (cancelled || !mealWithIngredients?.ingredients) return;
+
+      setIngredients(
+        mealWithIngredients.ingredients.length > 0
+          ? mealWithIngredients.ingredients.map(ingredientToDraft)
+          : [createBlankIngredientDraft()]
+      );
+    }
+
+    loadSelectedMeal();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedMeal]);
+
+  const submitMeal = async () => {
+    const title = (selectedMeal?.label || mealTitle || commandInputValue).trim();
+    if (!title) {
+      showFeedback("Please select a meal or type a new meal name.");
+      return;
+    }
+
+    const parsedIngredients = ingredients
+      .map((ingredient, index) => draftToIngredient(ingredient, index))
+      .filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient));
+
+    setIsSaving(true);
+    await saveMealWithIngredients(
+      {
+        title,
+        date: mealState.date || undefined,
+        type: mealState.type,
+      },
+      parsedIngredients
     );
-    const [commandInputValue, setCommandInputValue] = useState("");
-    const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
-    const {
-        mealState
-      } = useContext(MealContext);
+    setIsSaving(false);
+    setShowModal(false);
+  };
 
-    const submitMeal = async () => {
-        if(!selectedMeal) {
-            setFeedbackMsgState("Please select a meal or type a new meal name.");
-            setTimeout(()=>setFeedbackMsgState(null),3000);
-            return;
-        }
-        await mpDB.meals.add({
-            title: selectedMeal?.label.trim() || '',
-            date: mealState.date || undefined,
-            type: mealState.type
-        });
-        setShowModal(false);
-    };
+  const submitNewMeal = async (typedValue: string) => {
+    setMealTitle(typedValue);
+    setSelectedMeal(null);
+    setCommandInputValue(typedValue);
+  };
 
-    const submitNewMeal = async (typedValue:string) => {
-        await mpDB.meals.add({
-            title: typedValue.trim(),
-            date: mealState.date || undefined,
-            type: mealState.type
-        });
-        setShowModal(false);
-    };
+  const showFeedback = (message: string) => {
+    setFeedbackMsgState(message);
+    setTimeout(() => setFeedbackMsgState(null), 3000);
+  };
 
-    return (
-        <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" aria-hidden="true"></div>
-            <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div className="flex min-h-full justify-center p-4 text-center items-center sm:p-0">
-                    <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                            <div className="sm:flex sm:items-start">
-                                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                                </div>
-                                <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Add Meal for {getWeekdayString(mealState.date || undefined)} {mealState.type.charAt(0).toUpperCase() + mealState.type.slice(1)}</h3>
-                                    <div className="mt-2">
-                                        <MealCombobox
-                                            addNewText="Add New Meal"
-                                            selectedMeal={selectedMeal}
-                                            setSelectedMeal={setSelectedMeal}
-                                            commandInputValue={commandInputValue}
-                                            setCommandInputValue={setCommandInputValue}
-                                            submitMeal={submitNewMeal}
-                                            meals={uniqueMealsDatabase}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="addMealFeedback">
-                            {feedbackMsgState && <p className="text-red-500 font-bold text-sm text-center p-3">{feedbackMsgState}</p>}
-                        </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 relative z-[60]">
-                            <button onClick={()=>submitMeal()} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Submit</button>
-                            <button onClick={()=>setShowModal(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <ResponsiveMealDialog
+      open={showModal}
+      onOpenChange={setShowModal}
+      title={dialogTitle}
+      description="Choose a saved meal or create a new one, then add ingredients for grocery planning."
+    >
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <Label>Meal</Label>
+          <MealCombobox
+            addNewText="Use Typed Meal"
+            selectedMeal={selectedMeal}
+            setSelectedMeal={setSelectedMeal}
+            commandInputValue={commandInputValue}
+            setCommandInputValue={(value) => {
+              setCommandInputValue(value);
+              if (!selectedMeal) setMealTitle(value);
+            }}
+            submitMeal={submitNewMeal}
+            meals={uniqueMealsDatabase}
+          />
+          <Input
+            value={mealTitle || commandInputValue}
+            onChange={(event) => {
+              setSelectedMeal(null);
+              setMealTitle(event.target.value);
+              setCommandInputValue(event.target.value);
+            }}
+            placeholder="Meal name"
+          />
         </div>
-    );
-};
+
+        <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        {feedbackMsgState && <p className="text-sm font-semibold text-red-600">{feedbackMsgState}</p>}
+
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={submitMeal} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save Meal"}
+          </Button>
+        </div>
+      </div>
+    </ResponsiveMealDialog>
+  );
+}

@@ -60,7 +60,7 @@ const projects: Record<string, () => Promise<Project>> = {
       'components/EditMealModal.tsx',
       'components/WeekPager.tsx',
       'components/MealGrid.tsx',
-      'components/MealGridPanel.tsx',
+      'components/MealCard.tsx',
       'components/MealCarousel.tsx',
       'components/MealCombobox.tsx',
       'components/Drawer.tsx',

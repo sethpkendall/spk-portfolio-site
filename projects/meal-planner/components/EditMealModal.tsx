@@ -1,77 +1,151 @@
-import {useContext, useEffect, useState} from 'react';
-import{ MealCombobox } from './MealCombobox';
-import { MealContext } from '@/contexts/MealContext';
-import { getWeekdayString } from '@/lib/utils';
-import { mpDB } from '@/models/db';
-import { Meal } from '@/models/interfaces';
-import {localeFormat} from 'light-date';
+"use client";
+
+import { useContext, useEffect, useMemo, useState } from "react";
+import { MealContext } from "@/contexts/MealContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Meal } from "@/models/interfaces";
+import { localeFormat } from "light-date";
+import { IngredientDraft, MealOption } from "./types";
+import IngredientEditor from "./IngredientEditor";
+import { MealCombobox } from "./MealCombobox";
+import ResponsiveMealDialog from "./ResponsiveMealDialog";
+import {
+  createBlankIngredientDraft,
+  draftToIngredient,
+  findLatestMealByTitle,
+  ingredientToDraft,
+  updateMealWithIngredients,
+} from "./mealPlannerData";
 
 type EditMealModalProps = {
-    showEditModal: boolean;
-    setShowEditModal: (showEditModal:boolean) => void;
-    uniqueMealsDatabase: {label: string, value: Meal}[];
+  showEditModal: boolean;
+  setShowEditModal: (showEditModal: boolean) => void;
+  uniqueMealsDatabase: MealOption[];
 };
 
-export default function EditMealModal({showEditModal,setShowEditModal,uniqueMealsDatabase}:EditMealModalProps){
-    const [commandInputValue, setCommandInputValue] = useState("");
-    const {
-        mealState,
-    } = useContext(MealContext);
+export default function EditMealModal({
+  showEditModal,
+  setShowEditModal,
+  uniqueMealsDatabase,
+}: EditMealModalProps) {
+  const { mealState } = useContext(MealContext);
+  const [commandInputValue, setCommandInputValue] = useState("");
+  const [mealTitle, setMealTitle] = useState(mealState.title || "");
+  const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
+  const [selectedMeal, setSelectedMeal] = useState<MealOption | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-    const [selectedMeal, setSelectedMeal] = useState<{label: string, value: Meal} | null>(
-        mealState ? uniqueMealsDatabase.find((meal)=>meal.value.id === mealState.id)||null : null
+  useEffect(() => {
+    setMealTitle(mealState.title || "");
+    setCommandInputValue(mealState.title || "");
+    setIngredients(
+      mealState.ingredients && mealState.ingredients.length > 0
+        ? mealState.ingredients.map(ingredientToDraft)
+        : [createBlankIngredientDraft()]
     );
+    setSelectedMeal(
+      mealState.id ? uniqueMealsDatabase.find((meal) => meal.value.id === mealState.id) || null : null
+    );
+  }, [mealState, uniqueMealsDatabase]);
 
-    const submitModal = () => {
+  useEffect(() => {
+    let cancelled = false;
 
+    async function loadSelectedMeal() {
+      if (!selectedMeal || selectedMeal.value.id === mealState.id) return;
+
+      setMealTitle(selectedMeal.label);
+      const mealWithIngredients = await findLatestMealByTitle(selectedMeal.label);
+      if (cancelled || !mealWithIngredients?.ingredients) return;
+
+      setIngredients(
+        mealWithIngredients.ingredients.length > 0
+          ? mealWithIngredients.ingredients.map(ingredientToDraft)
+          : [createBlankIngredientDraft()]
+      );
+    }
+
+    loadSelectedMeal();
+
+    return () => {
+      cancelled = true;
     };
+  }, [mealState.id, selectedMeal]);
 
-    const updateMeal = async (typedValue:string) => {
-        await mpDB.meals.put({
-            id: mealState.id,
-            title: typedValue,
-            date: mealState.date || undefined,
-            type: mealState.type
-        });
-        setShowEditModal(false);
-    };
+  const dialogTitle = useMemo(() => {
+    const mealType = mealState.type ? mealState.type.charAt(0).toUpperCase() + mealState.type.slice(1) : "Meal";
+    return `Edit Meal for ${localeFormat(new Date(mealState.date || new Date()), "{EEEE}")} ${mealType}`;
+  }, [mealState.date, mealState.type]);
 
-    return (
-        <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" aria-hidden="true"></div>
-            <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div className="flex min-h-full justify-center p-4 text-center items-center sm:p-0">
-                    <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                            <div className="sm:flex sm:items-start">
-                                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                                </div>
-                                <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Meal for {localeFormat(new Date(mealState?.date||new Date()),"{EEEE}")} {mealState.type.charAt(0).toUpperCase() + mealState.type.slice(1)}</h3>
-                                    <div className="mt-2">
-                                        <MealCombobox
-                                            addNewText="Submit Update"
-                                            selectedMeal={selectedMeal}
-                                            setSelectedMeal={setSelectedMeal}
-                                            commandInputValue={commandInputValue}
-                                            setCommandInputValue={setCommandInputValue}
-                                            submitMeal={updateMeal}
-                                            meals={uniqueMealsDatabase}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 relative z-[60]">
-                            <button onClick={()=>updateMeal(selectedMeal?.label||'')} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">Submit</button>
-                            <button onClick={()=>setShowEditModal(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  const updateMeal = async () => {
+    const parsedIngredients = ingredients
+      .map((ingredient, index) => draftToIngredient(ingredient, index))
+      .filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient));
+
+    setIsSaving(true);
+    await updateMealWithIngredients(
+      {
+        id: mealState.id,
+        title: mealTitle.trim(),
+        date: mealState.date || undefined,
+        type: mealState.type,
+      } as Meal,
+      parsedIngredients
+    );
+    setIsSaving(false);
+    setShowEditModal(false);
+  };
+
+  return (
+    <ResponsiveMealDialog
+      open={showEditModal}
+      onOpenChange={setShowEditModal}
+      title={dialogTitle}
+      description="Update the meal name and its ingredients."
+    >
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <Label>Meal</Label>
+          <MealCombobox
+            addNewText="Use Typed Meal"
+            selectedMeal={selectedMeal}
+            setSelectedMeal={setSelectedMeal}
+            commandInputValue={commandInputValue}
+            setCommandInputValue={(value) => {
+              setCommandInputValue(value);
+              setMealTitle(value);
+            }}
+            submitMeal={(typedValue) => {
+              setSelectedMeal(null);
+              setMealTitle(typedValue);
+              setCommandInputValue(typedValue);
+            }}
+            meals={uniqueMealsDatabase}
+          />
+          <Input
+            value={mealTitle}
+            onChange={(event) => {
+              setSelectedMeal(null);
+              setMealTitle(event.target.value);
+              setCommandInputValue(event.target.value);
+            }}
+            placeholder="Meal name"
+          />
         </div>
-    );
-};
+
+        <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={updateMeal} disabled={isSaving || !mealTitle.trim()}>
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
+      </div>
+    </ResponsiveMealDialog>
+  );
+}
