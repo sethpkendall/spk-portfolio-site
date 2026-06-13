@@ -3,7 +3,7 @@ import { Meal } from "@/models/interfaces";
 import MealGrid from "./MealGrid";
 import MealCarousel from "./MealCarousel";
 import WeekPager from "./WeekPager";
-import { CalendarPlus, ShoppingBasket } from "lucide-react";
+import { CalendarPlus, Copy, ShoppingBasket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MEAL_TYPES } from "./mealPlannerData";
 import { WeekMealState } from "./types";
@@ -17,6 +17,7 @@ interface MealPlannerToolProps {
   setActiveMealSlot: (dayString: string, mealType: string) => void;
   setActiveMealForEdit: (meal: Meal) => void;
   onOpenGroceryList: () => void;
+  onOpenWeekCopy: () => void;
   shownWeek: Date;
   setShownWeek: (value: Date) => void;
 }
@@ -27,6 +28,7 @@ export default function MealPlannerTool({
   meals,
   setActiveMealForEdit,
   onOpenGroceryList,
+  onOpenWeekCopy,
   setActiveMealSlot,
   setShowEditModal,
   setShowModal,
@@ -56,7 +58,11 @@ export default function MealPlannerTool({
   return (
     <div className="mealPlannerToolParent min-h-[34rem]">
       <WeekPager shownWeek={shownWeek} setShownWeek={setShownWeek} />
-      <div className="mb-5 flex justify-end">
+      <div className="mb-5 flex flex-wrap justify-end gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={onOpenWeekCopy} className="gap-2">
+          <Copy className="h-4 w-4" />
+          Copy Week
+        </Button>
         <Button type="button" variant="outline" size="sm" onClick={onOpenGroceryList} className="gap-2">
           <ShoppingBasket className="h-4 w-4" />
           Grocery List

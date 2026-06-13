@@ -31,6 +31,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
   const [mealTitle, setMealTitle] = useState("");
   const [commandInputValue, setCommandInputValue] = useState("");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
+  const [instructions, setInstructions] = useState("");
   const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -46,6 +47,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
     setMealTitle("");
     setCommandInputValue("");
     setIngredients([createBlankIngredientDraft()]);
+    setInstructions("");
     setFeedbackMsgState(null);
   }, [mealState.date, mealState.type, showModal]);
 
@@ -57,13 +59,14 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
 
       setMealTitle(selectedMeal.label);
       const mealWithIngredients = await findLatestMealByTitle(selectedMeal.label);
-      if (cancelled || !mealWithIngredients?.ingredients) return;
+      if (cancelled || !mealWithIngredients) return;
 
       setIngredients(
-        mealWithIngredients.ingredients.length > 0
+        mealWithIngredients.ingredients && mealWithIngredients.ingredients.length > 0
           ? mealWithIngredients.ingredients.map(ingredientToDraft)
           : [createBlankIngredientDraft()]
       );
+      setInstructions(mealWithIngredients.instructions || "");
     }
 
     loadSelectedMeal();
@@ -90,6 +93,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
         title,
         date: mealState.date || undefined,
         type: mealState.type,
+        instructions: instructions.trim() || undefined,
       },
       parsedIngredients
     );
@@ -142,6 +146,18 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
         </div>
 
         <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        <div className="space-y-2">
+          <Label htmlFor="add-meal-instructions">Instructions <span className="font-normal text-slate-400">(optional)</span></Label>
+          <textarea
+            id="add-meal-instructions"
+            value={instructions}
+            onChange={event => setInstructions(event.target.value)}
+            placeholder="Add preparation notes or cooking steps"
+            rows={4}
+            className="flex min-h-24 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
+        </div>
 
         {feedbackMsgState && <p className="text-sm font-semibold text-red-600">{feedbackMsgState}</p>}
 

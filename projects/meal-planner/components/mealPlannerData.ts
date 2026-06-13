@@ -1,6 +1,6 @@
 import { mpDB } from "@/models/db";
 import { Food, GroceryListItem, Meal, MealIngredient, Recipe } from "@/models/interfaces";
-import { GroceryRow, IngredientDraft, MealType, WeekMealState } from "./types";
+import { GroceryRow, IngredientDraft, MealType, WeekCopyMode, WeekCopyResult, WeekMealState } from "./types";
 
 export const MEAL_TYPES: MealType[] = ["breakfast", "lunch", "dinner"];
 
@@ -21,6 +21,13 @@ export function getWeekBounds(startDate: Date): { startDate: Date; endDate: Date
   end.setHours(23, 59, 59, 999);
 
   return { startDate: start, endDate: end };
+}
+
+export function getWeekStart(date: Date): Date {
+  const start = new Date(date);
+  start.setDate(start.getDate() - start.getDay());
+  start.setHours(0, 0, 0, 0);
+  return start;
 }
 
 export function dateKey(date: Date): string {
@@ -275,12 +282,93 @@ export async function removeGroceryRow(weekStart: Date, row: GroceryRow): Promis
   await saveGroceryOverride(weekStart, { ...row, removed: true });
 }
 
+export async function countWeekMeals(weekStart: Date): Promise<number> {
+  const { startDate, endDate } = getWeekBounds(getWeekStart(weekStart));
+  return mpDB.meals.where("date").between(startDate, endDate, true, true).count();
+}
+
+export async function copyWeekMeals(
+  sourceWeek: Date,
+  destinationWeek: Date,
+  mode: WeekCopyMode,
+): Promise<WeekCopyResult> {
+  const sourceStart = getWeekStart(sourceWeek);
+  const destinationStart = getWeekStart(destinationWeek);
+
+  if (weekKey(sourceStart) === weekKey(destinationStart)) {
+    throw new Error("Source and destination week are the same.");
+  }
+
+  return mpDB.transaction("rw", mpDB.meals, mpDB.recipes, async () => {
+    const sourceBounds = getWeekBounds(sourceStart);
+    const destinationBounds = getWeekBounds(destinationStart);
+    const sourceMeals = await mpDB.meals
+      .where("date")
+      .between(sourceBounds.startDate, sourceBounds.endDate, true, true)
+      .toArray();
+    const destinationMeals = await mpDB.meals
+      .where("date")
+      .between(destinationBounds.startDate, destinationBounds.endDate, true, true)
+      .toArray();
+
+    if (mode === "replace") {
+      await deleteMealsAndRecipes(destinationMeals);
+    }
+
+    const occupiedSlots = new Set(
+      (mode === "merge" ? destinationMeals : []).map(meal => mealSlotKey(meal, destinationStart))
+    );
+    let copiedCount = 0;
+    let skippedCount = 0;
+
+    for (const sourceMeal of sourceMeals) {
+      const sourceDate = sourceMeal.date ? new Date(sourceMeal.date) : null;
+      if (!sourceDate) continue;
+
+      const dayOffset = calendarDayDifference(sourceStart, sourceDate);
+      const destinationDate = new Date(destinationStart);
+      destinationDate.setDate(destinationStart.getDate() + dayOffset);
+      const slotKey = `${dayOffset}:${sourceMeal.type.toLowerCase()}`;
+
+      if (mode === "merge" && occupiedSlots.has(slotKey)) {
+        skippedCount += 1;
+        continue;
+      }
+
+      const copiedMealId = await mpDB.meals.add({
+        title: sourceMeal.title,
+        date: destinationDate,
+        type: sourceMeal.type,
+        instructions: sourceMeal.instructions,
+      });
+      const sourceRecipes = sourceMeal.id
+        ? await mpDB.recipes.where("mealId").equals(sourceMeal.id).toArray()
+        : [];
+
+      for (const recipe of sourceRecipes) {
+        await mpDB.recipes.add({
+          mealId: copiedMealId,
+          foodId: recipe.foodId,
+          quantity: recipe.quantity,
+          unit: recipe.unit,
+          sortOrder: recipe.sortOrder,
+        });
+      }
+
+      occupiedSlots.add(slotKey);
+      copiedCount += 1;
+    }
+
+    return { copiedCount, skippedCount, destinationWeek: destinationStart };
+  });
+}
+
 async function replaceMealIngredients(mealId: number, ingredients: MealIngredient[]): Promise<void> {
   await mpDB.recipes.where("mealId").equals(mealId).delete();
 
   for (let index = 0; index < ingredients.length; index += 1) {
     const ingredient = ingredients[index];
-    const foodId = ingredient.foodId ?? await upsertFood(ingredient.title);
+    const foodId = await upsertFood(ingredient.title);
     await mpDB.recipes.add({
       mealId,
       foodId,
@@ -289,6 +377,25 @@ async function replaceMealIngredients(mealId: number, ingredients: MealIngredien
       sortOrder: ingredient.sortOrder ?? index,
     });
   }
+}
+
+async function deleteMealsAndRecipes(meals: Meal[]): Promise<void> {
+  for (const meal of meals) {
+    if (!meal.id) continue;
+    await mpDB.recipes.where("mealId").equals(meal.id).delete();
+    await mpDB.meals.delete(meal.id);
+  }
+}
+
+function mealSlotKey(meal: Meal, weekStart: Date): string {
+  const mealDate = meal.date ? new Date(meal.date) : weekStart;
+  return `${calendarDayDifference(weekStart, mealDate)}:${meal.type.toLowerCase()}`;
+}
+
+function calendarDayDifference(start: Date, end: Date): number {
+  const startUtc = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+  const endUtc = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+  return Math.round((endUtc - startUtc) / 86_400_000);
 }
 
 function applyGroceryOverride(row: GroceryRow, override: GroceryListItem): GroceryRow {

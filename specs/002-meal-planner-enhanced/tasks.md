@@ -112,11 +112,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Add transactional week copy helpers for merge, replace, self-copy blocking, destination cleanup, and independent recipe row duplication in `projects/meal-planner/components/mealPlannerData.ts`
-- [ ] T036 [US3] Create the copy week dialog with destination week picker, merge/replace choice, conflict warning, and self-copy message in `projects/meal-planner/components/WeekCopyDialog.tsx`
-- [ ] T037 [US3] Wire copy week open/close state and completion feedback into `projects/meal-planner/index.tsx`
-- [ ] T038 [US3] Add the "Copy Week" toolbar action in `projects/meal-planner/components/MealPlannerTool.tsx`
-- [ ] T039 [US3] Ensure copied meals and recipe rows appear through the existing live weekly query after navigation in `projects/meal-planner/index.tsx`
+- [X] T035 [US3] Add transactional week copy helpers for merge, replace, self-copy blocking, destination cleanup, and independent recipe row duplication in `projects/meal-planner/components/mealPlannerData.ts`
+- [X] T036 [US3] Create the copy week dialog with destination week picker, merge/replace choice, conflict warning, and self-copy message in `projects/meal-planner/components/WeekCopyDialog.tsx`
+- [X] T037 [US3] Wire copy week open/close state and completion feedback into `projects/meal-planner/index.tsx`
+- [X] T038 [US3] Add the "Copy Week" toolbar action in `projects/meal-planner/components/MealPlannerTool.tsx`
+- [X] T039 [US3] Ensure copied meals and recipe rows appear through the existing live weekly query after navigation in `projects/meal-planner/index.tsx`
 
 **Checkpoint**: User Story 3 is fully functional and testable independently.
 
@@ -130,10 +130,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T040 [US4] Add optional instructions input to the add-meal dialog in `projects/meal-planner/components/AddMealModal.tsx`
-- [ ] T041 [US4] Add optional instructions input to the edit-meal dialog in `projects/meal-planner/components/EditMealModal.tsx`
-- [ ] T042 [US4] Persist instructions on meal create/update flows in `projects/meal-planner/components/mealPlannerData.ts`
-- [ ] T043 [US4] Add instructions indicator and readable detail display to meal cards in `projects/meal-planner/components/MealCard.tsx`
+- [X] T040 [US4] Add optional instructions input to the add-meal dialog in `projects/meal-planner/components/AddMealModal.tsx`
+- [X] T041 [US4] Add optional instructions input to the edit-meal dialog in `projects/meal-planner/components/EditMealModal.tsx`
+- [X] T042 [US4] Persist instructions on meal create/update flows in `projects/meal-planner/components/mealPlannerData.ts`
+- [X] T043 [US4] Add instructions indicator and readable detail display to meal cards in `projects/meal-planner/components/MealCard.tsx`
 
 **Checkpoint**: User Story 4 is fully functional and testable independently.
 

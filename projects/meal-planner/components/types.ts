@@ -36,3 +36,9 @@ export type GroceryRow = {
 };
 
 export type WeekCopyMode = "merge" | "replace";
+
+export type WeekCopyResult = {
+  copiedCount: number;
+  skippedCount: number;
+  destinationWeek: Date;
+};

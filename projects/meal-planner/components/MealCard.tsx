@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { BookOpen, Plus, Pencil, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Meal } from "@/models/interfaces";
 import { deleteMealWithRecipes } from "./mealPlannerData";
+import ResponsiveMealDialog from "./ResponsiveMealDialog";
 
 type MealCardProps = {
   dayString: string;
@@ -18,6 +19,10 @@ type MealCardProps = {
 export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: MealCardProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const hasIngredients = Boolean(meal?.ingredients?.length);
+  const hasInstructions = Boolean(meal?.instructions?.trim());
+  const hasDetails = hasIngredients || hasInstructions;
 
   const deleteClick = async () => {
     if (!meal?.id) return;
@@ -67,6 +72,17 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             }`}
             aria-hidden={confirmDelete}
           >
+            {hasDetails && (
+              <button
+                type="button"
+                className="rounded-md p-1 text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => setShowInstructions(true)}
+                aria-label={`View details for ${meal.title}`}
+                tabIndex={confirmDelete ? -1 : 0}
+              >
+                <BookOpen className="h-4 w-4" />
+              </button>
+            )}
             <button
               type="button"
               className="rounded-md p-1 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
@@ -119,6 +135,45 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
               </div>
           </div>
         </div>
+      )}
+
+      {meal && hasDetails && (
+        <ResponsiveMealDialog
+          open={showInstructions}
+          onOpenChange={setShowInstructions}
+          title={`${meal.title} Details`}
+          description="Ingredients, preparation notes, and cooking steps when available."
+        >
+          <div className="max-h-[58vh] space-y-5 overflow-y-auto">
+            {meal.ingredients && meal.ingredients.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-slate-900">Ingredients</h3>
+                <ul className="divide-y divide-slate-200 rounded-md border border-slate-200 bg-white">
+                  {meal.ingredients.map((ingredient, index) => (
+                    <li
+                      key={`${meal.id}-detail-${ingredient.foodId ?? ingredient.title}-${index}`}
+                      className="flex items-baseline justify-between gap-4 px-3 py-2 text-sm"
+                    >
+                      <span className="min-w-0 font-medium text-slate-800">{ingredient.title}</span>
+                      <span className="shrink-0 text-right text-slate-500">
+                        {ingredient.quantity} {ingredient.unit}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {hasInstructions && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-slate-900">Instructions</h3>
+                <div className="whitespace-pre-wrap rounded-md border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-800">
+                  {meal.instructions}
+                </div>
+              </section>
+            )}
+          </div>
+        </ResponsiveMealDialog>
       )}
     </Card>
   );

@@ -11,6 +11,7 @@ import MealPlannerTool from "./components/MealPlannerTool";
 import AddMealModal from "./components/AddMealModal";
 import EditMealModal from "./components/EditMealModal";
 import GroceryListDialog from "./components/GroceryListDialog";
+import WeekCopyDialog from "./components/WeekCopyDialog";
 import {
   createEmptyWeekState,
   dateKey,
@@ -18,7 +19,7 @@ import {
   hydrateMeal,
   hydrateMeals,
 } from "./components/mealPlannerData";
-import { MealOption, MealSlot, WeekMealState } from "./components/types";
+import { MealOption, MealSlot, WeekCopyResult, WeekMealState } from "./components/types";
 
 function getCurrentWeekStart(): Date {
   const today = new Date();
@@ -33,6 +34,8 @@ export default function MealPlanner() {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showGroceryList, setShowGroceryList] = useState(false);
+  const [showWeekCopy, setShowWeekCopy] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
   const [weekMealState, setWeekMealState] = useState<WeekMealState>(
     createEmptyWeekState(getWeekDateStrings(getCurrentWeekStart()))
   );
@@ -118,11 +121,27 @@ export default function MealPlanner() {
     });
   };
 
+  const handleWeekCopyComplete = (result: WeekCopyResult) => {
+    const destinationLabel = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(result.destinationWeek);
+    const skipped = result.skippedCount > 0 ? ` ${result.skippedCount} occupied slots were kept.` : "";
+    setCopyFeedback(`Copied ${result.copiedCount} meals to the week of ${destinationLabel}.${skipped}`);
+    setTimeout(() => setCopyFeedback(null), 6000);
+  };
+
   return (
     <div className="w-full min-h-[500px]">
       {loadError && (
         <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           Meal planner data could not load: {loadError}
+        </div>
+      )}
+      {copyFeedback && (
+        <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800" role="status">
+          {copyFeedback}
         </div>
       )}
       <MealContext.Provider value={{ mealState, setMealState }}>
@@ -137,6 +156,7 @@ export default function MealPlanner() {
           setActiveMealSlot={setActiveMealSlot}
           setActiveMealForEdit={setActiveMealForEdit}
           onOpenGroceryList={() => setShowGroceryList(true)}
+          onOpenWeekCopy={() => setShowWeekCopy(true)}
         />
         <AddMealModal
           uniqueMealsDatabase={uniqueMealsDatabase}
@@ -152,6 +172,12 @@ export default function MealPlanner() {
           open={showGroceryList}
           onOpenChange={setShowGroceryList}
           shownWeek={shownWeek}
+        />
+        <WeekCopyDialog
+          open={showWeekCopy}
+          onOpenChange={setShowWeekCopy}
+          sourceWeek={shownWeek}
+          onComplete={handleWeekCopyComplete}
         />
       </MealContext.Provider>
     </div>

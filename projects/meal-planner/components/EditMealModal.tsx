@@ -34,6 +34,7 @@ export default function EditMealModal({
   const [commandInputValue, setCommandInputValue] = useState("");
   const [mealTitle, setMealTitle] = useState(mealState.title || "");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
+  const [instructions, setInstructions] = useState(mealState.instructions || "");
   const [selectedMeal, setSelectedMeal] = useState<MealOption | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -45,6 +46,7 @@ export default function EditMealModal({
         ? mealState.ingredients.map(ingredientToDraft)
         : [createBlankIngredientDraft()]
     );
+    setInstructions(mealState.instructions || "");
     setSelectedMeal(
       mealState.id ? uniqueMealsDatabase.find((meal) => meal.value.id === mealState.id) || null : null
     );
@@ -58,13 +60,14 @@ export default function EditMealModal({
 
       setMealTitle(selectedMeal.label);
       const mealWithIngredients = await findLatestMealByTitle(selectedMeal.label);
-      if (cancelled || !mealWithIngredients?.ingredients) return;
+      if (cancelled || !mealWithIngredients) return;
 
       setIngredients(
-        mealWithIngredients.ingredients.length > 0
+        mealWithIngredients.ingredients && mealWithIngredients.ingredients.length > 0
           ? mealWithIngredients.ingredients.map(ingredientToDraft)
           : [createBlankIngredientDraft()]
       );
+      setInstructions(mealWithIngredients.instructions || "");
     }
 
     loadSelectedMeal();
@@ -91,6 +94,7 @@ export default function EditMealModal({
         title: mealTitle.trim(),
         date: mealState.date || undefined,
         type: mealState.type,
+        instructions: instructions.trim() || undefined,
       } as Meal,
       parsedIngredients
     );
@@ -136,6 +140,18 @@ export default function EditMealModal({
         </div>
 
         <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        <div className="space-y-2">
+          <Label htmlFor="edit-meal-instructions">Instructions <span className="font-normal text-slate-400">(optional)</span></Label>
+          <textarea
+            id="edit-meal-instructions"
+            value={instructions}
+            onChange={event => setInstructions(event.target.value)}
+            placeholder="Add preparation notes or cooking steps"
+            rows={4}
+            className="flex min-h-24 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
+        </div>
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
