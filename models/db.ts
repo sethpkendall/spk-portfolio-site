@@ -1,5 +1,4 @@
 import Dexie, { type Table } from 'dexie';
-import { gkPopulate, mpPopulate } from './populate';
 import { Meal, Food, Recipe, GroceryListItem, Session, Goal, Log, Aquarium, Inhabitant, ActivityType, ActivityLog, EquipmentItem, PomodoroSession, PomodoroSettings } from './interfaces';
 
 
@@ -105,18 +104,3 @@ export class PomodoroTimerDB extends Dexie {
 }
 
 export const ptDB = new PomodoroTimerDB();
-
-// mpDB.on('populate', mpPopulate);
-// gkDB.on('populate', gkPopulate);
-// resetDatabase();    
-
-// export function resetDatabase() {
-    // return mpDB.transaction('rw', mpDB.meals, mpDB.foods, mpDB.recipes, async () => {
-    //     await Promise.all(mpDB.tables.map(table => table.clear()));
-    //     await mpPopulate();
-    // });
-//     return amDB.transaction('rw', amDB.aquariums, amDB.inhabitants, amDB.activityTypes, amDB.activityLogs, amDB.equipment, async () => {
-//         await Promise.all(amDB.tables.map(table => table.clear()));
-//         await gkPopulate();
-//     });
-// }

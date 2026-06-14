@@ -4,7 +4,6 @@ export interface Meal {
     date?:Date;
     type:string;
     instructions?: string;
-    foods?:Food[];
     ingredients?: MealIngredient[];
 }
 

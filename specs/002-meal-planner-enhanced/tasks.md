@@ -143,12 +143,12 @@
 
 **Purpose**: Finish metadata, code viewer visibility, documentation, and full validation.
 
-- [ ] T044 [P] Update meal planner metadata, documentation, `updatedAt`, `aiTools`, and feature descriptions in `projects/meal-planner/metadata.json`
-- [ ] T045 Update the meal planner `codeFiles` list for new/removed components in `projects/registry.ts`
-- [ ] T046 Run the full quickstart validation flow from `specs/002-meal-planner-enhanced/quickstart.md`
-- [ ] T047 Time the SC-001, SC-002, and SC-004 scenarios from `specs/002-meal-planner-enhanced/spec.md` and document whether create-meal, grocery-generation, and week-copy thresholds pass in `specs/002-meal-planner-enhanced/quickstart.md`
-- [ ] T048 Run `npm run build` using `package.json` and fix any meal planner TypeScript or Next.js build errors in `projects/meal-planner/`, `models/db.ts`, or `models/interfaces.ts`
-- [ ] T049 Final cleanup pass for unused imports, deleted component references, duplicate code paths, and responsive text/layout issues across `projects/meal-planner/`
+- [X] T044 [P] Update meal planner metadata, documentation, `updatedAt`, `aiTools`, and feature descriptions in `projects/meal-planner/metadata.json`
+- [X] T045 Update the meal planner `codeFiles` list for new/removed components in `projects/registry.ts`
+- [X] T046 Run the full quickstart validation flow from `specs/002-meal-planner-enhanced/quickstart.md`
+- [X] T047 Time the SC-001, SC-002, and SC-004 scenarios from `specs/002-meal-planner-enhanced/spec.md` and document whether create-meal, grocery-generation, and week-copy thresholds pass in `specs/002-meal-planner-enhanced/quickstart.md`
+- [X] T048 Run `npm run build` using `package.json` and fix any meal planner TypeScript or Next.js build errors in `projects/meal-planner/`, `models/db.ts`, or `models/interfaces.ts`
+- [X] T049 Final cleanup pass for unused imports, deleted component references, duplicate code paths, and responsive text/layout issues across `projects/meal-planner/`
 
 ---
 

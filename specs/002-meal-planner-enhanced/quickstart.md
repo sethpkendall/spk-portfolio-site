@@ -33,3 +33,28 @@ npm run build
 ```
 
 The repo does not currently define a unit test script, so implementation verification should pair the build with the manual flow above.
+
+## Validation Results
+
+Validated on June 13, 2026 using an isolated Chromium profile and IndexedDB database.
+
+- **Migration preservation**: PASS. A meal created in a simulated MealPlannerDB v3 database remained in its original Sunday dinner slot after upgrading to v5.
+- **Create and edit flow**: PASS. A meal with five ingredients and multiline instructions was created, reopened, edited, and persisted with its quantities, units, ingredient names, and instructions intact.
+- **Meal details**: PASS. Ingredient-only meals and meals with instructions expose the responsive details dialog; available ingredients appear above optional instructions.
+- **Grocery generation**: PASS. Same-name/same-unit olive oil rows aggregated, the different-unit row remained separate, and checked state, quantity overrides, removals, and freeform rows persisted without changing recipe ingredients.
+- **Copy week**: PASS. Merge preserved occupied slots, replace cleared destination meals and recipes, and copied meals retained independent recipe rows and instructions.
+- **Responsive layout**: PASS. The live view switched between the desktop grid and mobile carousel across the 768px breakpoint. The mobile page, tabs, metadata badges, carousel controls, cards, and dialogs remained within the scrollable viewport.
+- **Delete confirmation**: PASS. Delete actions expose confirmation controls before permanent removal.
+- **Cleanup**: PASS. The retired project-local drawer, obsolete `Meal.foods` property, unused MealContext hook, stale database reset comments/imports, and deleted component registry references were removed.
+
+## Performance Results
+
+Measured on June 13, 2026 in an isolated headless Chromium profile on the local development server. Timings measure the requested interaction through the resulting UI/database state.
+
+| Criterion | Threshold | Measured | Result |
+| --- | ---: | ---: | --- |
+| SC-001: Create and save a meal with 5 ingredients | Under 30 seconds | 234 ms automated interaction | PASS |
+| SC-002: Generate grocery list from 15+ meals | Under 2 seconds | 113 ms | PASS |
+| SC-004: Copy a full 21-meal week with ingredients | Under 3 seconds | 93 ms | PASS |
+
+SC-003, SC-005, SC-006, SC-007, and SC-008 also passed through the functional validation flow above.

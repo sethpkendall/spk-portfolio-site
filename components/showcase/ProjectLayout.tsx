@@ -72,7 +72,7 @@ export function ProjectLayout({ metadata, children, code, codeFiles }: ProjectLa
               </span>
             </div>
             {metadata.aiTools && metadata.aiTools.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <Cpu className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 <span className="text-sm text-gray-500 dark:text-gray-400">AI-Assisted:</span>
                 {metadata.aiTools.map((tool) => (
