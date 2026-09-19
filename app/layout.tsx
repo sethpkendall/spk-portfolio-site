@@ -67,6 +67,24 @@ function Footer() {
               <Link href="/showcase" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                 Showcase
               </Link>
+              <Link href="/trellis-calendar" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                Trellis Calendar
+              </Link>
+            </nav>
+          </div>
+
+          {/* Policies */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
+              Policies
+            </h4>
+            <nav className="flex flex-col gap-2 text-sm">
+              <Link href="/privacy/trellis-calendar" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                Calendar Privacy
+              </Link>
+              <Link href="/terms/trellis-calendar" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                Calendar Terms
+              </Link>
             </nav>
           </div>
 
