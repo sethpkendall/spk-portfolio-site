@@ -1,6 +1,6 @@
 # Meal Tags OpenClaw Pilot Brief
 
-Status: proposed; implementation requires Seth's confirmation
+Status: implemented locally; interactive browser review pending
 
 Branch: `work/meal-planner-openclaw-pilot`
 
@@ -74,6 +74,7 @@ Expected paths:
 - `projects/meal-planner/components/AddMealModal.tsx`
 - `projects/meal-planner/components/EditMealModal.tsx`
 - `projects/meal-planner/components/MealCard.tsx`
+- `projects/meal-planner/components/mealTags.ts`
 - `projects/meal-planner/components/mealPlannerData.ts`
 - focused reusable tag-input code only if it materially reduces duplication
 - this brief and, after implementation, its evidence section
@@ -123,4 +124,26 @@ on this branch, but not push, deployment, credentials, or production changes.
 
 ## Implementation evidence
 
-Not started.
+Completed locally on 2026-10-10.
+
+- Added optional `Meal.tags` storage without changing the indexed Dexie schema.
+- Added a shared comma parser that trims values, removes empty entries, and
+  deduplicates case-insensitively while preserving first-entered spelling.
+- Add and edit flows persist tags; prior-meal selection prefills them; update
+  and copy-week projections explicitly preserve them.
+- Meal cards show up to two compact tag badges plus an overflow count, and the
+  details dialog shows the complete tag set.
+- Three direct normalization cases pass, including whitespace, empty entries,
+  and case-insensitive duplicates.
+- `npx tsc --noEmit`: PASS.
+- `npm run build`: expected partial PASS. Compilation and lint/type checking
+  complete successfully; page-data collection then stops at the unchanged
+  Contentful-dependent `/posts/[slug]` failure.
+- Development route `/showcase/meal-planner`: HTTP 200 with the expected title.
+- `git diff --check`: PASS.
+
+The host's intentionally disabled browser capability was not expanded for this
+pilot. Consequently, IndexedDB reload behavior, prior-meal prefill, week-copy
+behavior, and responsive visual layout still require interactive review in an
+isolated browser before push or deployment. The corresponding code paths were
+included in the source audit, but that is not presented as runtime proof.

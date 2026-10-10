@@ -22,7 +22,8 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
   const [showInstructions, setShowInstructions] = useState(false);
   const hasIngredients = Boolean(meal?.ingredients?.length);
   const hasInstructions = Boolean(meal?.instructions?.trim());
-  const hasDetails = hasIngredients || hasInstructions;
+  const hasTags = Boolean(meal?.tags?.length);
+  const hasDetails = hasIngredients || hasInstructions || hasTags;
 
   const deleteClick = async () => {
     if (!meal?.id) return;
@@ -51,6 +52,19 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             <Badge className="w-full justify-center whitespace-normal py-1 text-center text-sm">
               {meal.title}
             </Badge>
+
+            {meal.tags && meal.tags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-1" aria-label={`Tags for ${meal.title}`}>
+                {meal.tags.slice(0, 2).map(tag => (
+                  <Badge key={tag.toLowerCase()} variant="secondary" className="max-w-full truncate text-[10px]">
+                    {tag}
+                  </Badge>
+                ))}
+                {meal.tags.length > 2 && (
+                  <Badge variant="outline" className="text-[10px]">+{meal.tags.length - 2}</Badge>
+                )}
+              </div>
+            )}
 
             {meal.ingredients && meal.ingredients.length > 0 && (
               <ul className="space-y-1 text-xs text-slate-600">
@@ -142,9 +156,20 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
           open={showInstructions}
           onOpenChange={setShowInstructions}
           title={`${meal.title} Details`}
-          description="Ingredients, preparation notes, and cooking steps when available."
+          description="Tags, ingredients, preparation notes, and cooking steps when available."
         >
           <div className="max-h-[58vh] space-y-5 overflow-y-auto">
+            {meal.tags && meal.tags.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-slate-900">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {meal.tags.map(tag => (
+                    <Badge key={tag.toLowerCase()} variant="secondary">{tag}</Badge>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {meal.ingredients && meal.ingredients.length > 0 && (
               <section className="space-y-2">
                 <h3 className="text-sm font-semibold text-slate-900">Ingredients</h3>

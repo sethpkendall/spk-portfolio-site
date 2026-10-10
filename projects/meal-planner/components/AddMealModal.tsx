@@ -18,6 +18,7 @@ import {
   ingredientToDraft,
   saveMealWithIngredients,
 } from "./mealPlannerData";
+import { parseMealTags } from "./mealTags";
 
 type AddMealModalProps = {
   showModal: boolean;
@@ -32,6 +33,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
   const [commandInputValue, setCommandInputValue] = useState("");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
   const [instructions, setInstructions] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
   const [feedbackMsgState, setFeedbackMsgState] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -48,6 +50,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
     setCommandInputValue("");
     setIngredients([createBlankIngredientDraft()]);
     setInstructions("");
+    setTagsInput("");
     setFeedbackMsgState(null);
   }, [mealState.date, mealState.type, showModal]);
 
@@ -67,6 +70,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
           : [createBlankIngredientDraft()]
       );
       setInstructions(mealWithIngredients.instructions || "");
+      setTagsInput(mealWithIngredients.tags?.join(", ") || "");
     }
 
     loadSelectedMeal();
@@ -86,6 +90,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
     const parsedIngredients = ingredients
       .map((ingredient, index) => draftToIngredient(ingredient, index))
       .filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient));
+    const tags = parseMealTags(tagsInput);
 
     setIsSaving(true);
     await saveMealWithIngredients(
@@ -94,6 +99,7 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
         date: mealState.date || undefined,
         type: mealState.type,
         instructions: instructions.trim() || undefined,
+        tags: tags.length > 0 ? tags : undefined,
       },
       parsedIngredients
     );
@@ -146,6 +152,17 @@ export default function AddMealModal({ showModal, setShowModal, uniqueMealsDatab
         </div>
 
         <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        <div className="space-y-2">
+          <Label htmlFor="add-meal-tags">Tags <span className="font-normal text-slate-400">(optional)</span></Label>
+          <Input
+            id="add-meal-tags"
+            value={tagsInput}
+            onChange={event => setTagsInput(event.target.value)}
+            placeholder="Vegan, Gwen in town"
+          />
+          <p className="text-xs text-slate-500">Separate multiple tags with commas.</p>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="add-meal-instructions">Instructions <span className="font-normal text-slate-400">(optional)</span></Label>
