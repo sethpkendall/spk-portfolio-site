@@ -147,3 +147,16 @@ pilot. Consequently, IndexedDB reload behavior, prior-meal prefill, week-copy
 behavior, and responsive visual layout still require interactive review in an
 isolated browser before push or deployment. The corresponding code paths were
 included in the source audit, but that is not presented as runtime proof.
+
+### Interactive QA evidence
+
+On 2026-11-07, the first mobile review exposed two blockers: accepting a typed
+meal did not close the nested picker, and the software keyboard could move the
+tall meal drawer below the viewport. The local fix closes the picker after
+accepting the typed value and uses Vaul's fixed/nested drawer behavior. Seth
+retested that narrow path in the private Control UI portal and reported **PASS**.
+The remaining tag lifecycle scenarios above are still pending.
+
+Tag-based filtering or discovery while choosing recipes remains outside this
+pilot. Seth identified it as a useful follow-up once the persistence and
+responsive QA work is complete.
