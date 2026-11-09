@@ -22,7 +22,8 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
   const [showInstructions, setShowInstructions] = useState(false);
   const hasIngredients = Boolean(meal?.ingredients?.length);
   const hasInstructions = Boolean(meal?.instructions?.trim());
-  const hasDetails = hasIngredients || hasInstructions;
+  const hasTags = Boolean(meal?.tags?.length);
+  const hasDetails = hasIngredients || hasInstructions || hasTags;
 
   const deleteClick = async () => {
     if (!meal?.id) return;
@@ -52,6 +53,19 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
               {meal.title}
             </Badge>
 
+            {meal.tags && meal.tags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-1" aria-label={`Tags for ${meal.title}`}>
+                {meal.tags.slice(0, 2).map(tag => (
+                  <Badge key={tag.toLowerCase()} variant="secondary" className="max-w-full truncate text-[10px]">
+                    {tag}
+                  </Badge>
+                ))}
+                {meal.tags.length > 2 && (
+                  <Badge variant="outline" className="text-[10px]">+{meal.tags.length - 2}</Badge>
+                )}
+              </div>
+            )}
+
             {meal.ingredients && meal.ingredients.length > 0 && (
               <ul className="space-y-1 text-xs text-slate-600">
                 {meal.ingredients.slice(0, 3).map((ingredient, index) => (
@@ -67,7 +81,9 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
           </div>
 
           <div
-            className={`flex min-h-8 justify-center gap-3 transition-opacity duration-150 ${
+            className={`grid min-h-8 w-full gap-1 transition-opacity duration-150 ${
+              hasDetails ? "grid-cols-3" : "grid-cols-2"
+            } ${
               confirmDelete ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
             aria-hidden={confirmDelete}
@@ -75,7 +91,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             {hasDetails && (
               <button
                 type="button"
-                className="rounded-md p-1 text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
                 onClick={() => setShowInstructions(true)}
                 aria-label={`View details for ${meal.title}`}
                 tabIndex={confirmDelete ? -1 : 0}
@@ -85,7 +101,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             )}
             <button
               type="button"
-              className="rounded-md p-1 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
+              className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
               onClick={() => onEdit(meal)}
               aria-label={`Edit ${meal.title}`}
               tabIndex={confirmDelete ? -1 : 0}
@@ -94,7 +110,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             </button>
             <button
               type="button"
-              className="rounded-md p-1 text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700"
+              className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700"
               onClick={() => setConfirmDelete(true)}
               aria-label={`Delete ${meal.title}`}
               tabIndex={confirmDelete ? -1 : 0}
@@ -142,9 +158,20 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
           open={showInstructions}
           onOpenChange={setShowInstructions}
           title={`${meal.title} Details`}
-          description="Ingredients, preparation notes, and cooking steps when available."
+          description="Tags, ingredients, preparation notes, and cooking steps when available."
         >
           <div className="max-h-[58vh] space-y-5 overflow-y-auto">
+            {meal.tags && meal.tags.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-slate-900">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {meal.tags.map(tag => (
+                    <Badge key={tag.toLowerCase()} variant="secondary">{tag}</Badge>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {meal.ingredients && meal.ingredients.length > 0 && (
               <section className="space-y-2">
                 <h3 className="text-sm font-semibold text-slate-900">Ingredients</h3>

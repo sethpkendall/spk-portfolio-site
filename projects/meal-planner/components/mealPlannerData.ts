@@ -166,6 +166,7 @@ export async function updateMealWithIngredients(
       date: meal.date,
       type: meal.type,
       instructions: meal.instructions,
+      tags: meal.tags,
     });
     await replaceMealIngredients(meal.id!, ingredients);
   });
@@ -340,6 +341,7 @@ export async function copyWeekMeals(
         date: destinationDate,
         type: sourceMeal.type,
         instructions: sourceMeal.instructions,
+        tags: sourceMeal.tags ? [...sourceMeal.tags] : undefined,
       });
       const sourceRecipes = sourceMeal.id
         ? await mpDB.recipes.where("mealId").equals(sourceMeal.id).toArray()

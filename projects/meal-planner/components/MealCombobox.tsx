@@ -38,6 +38,11 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
+  const useTypedMeal = () => {
+    submitMeal(commandInputValue);
+    setOpen(false);
+  };
+
   if (isDesktop) {
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -51,7 +56,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
                 <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal or add new..." />
                 <CommandList>
                     <CommandEmpty className="flex justify-center items-center p-2">
-                    <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
+                    <button onClick={useTypedMeal} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
                     </CommandEmpty>
                     <CommandGroup>
                     {meals.map((meal) => (
@@ -75,7 +80,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} fixed nested>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
           {selectedMeal ? <>{selectedMeal.label}</> : <>+ Pick Meal</>}
@@ -87,7 +92,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
                 <CommandInput value={commandInputValue} onValueChange={setCommandInputValue} placeholder="Filter meal or add new..." />
                 <CommandList>
                   <CommandEmpty className="flex justify-center items-center p-2">
-                  <button onClick={()=>submitMeal(commandInputValue)} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
+                  <button onClick={useTypedMeal} type="button" className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">{addNewText}</button>
                   </CommandEmpty>
                     <CommandGroup>
                     {meals.map((meal) => (

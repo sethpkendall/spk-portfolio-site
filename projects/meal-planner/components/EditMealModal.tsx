@@ -18,6 +18,7 @@ import {
   ingredientToDraft,
   updateMealWithIngredients,
 } from "./mealPlannerData";
+import { parseMealTags } from "./mealTags";
 
 type EditMealModalProps = {
   showEditModal: boolean;
@@ -35,6 +36,7 @@ export default function EditMealModal({
   const [mealTitle, setMealTitle] = useState(mealState.title || "");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([createBlankIngredientDraft()]);
   const [instructions, setInstructions] = useState(mealState.instructions || "");
+  const [tagsInput, setTagsInput] = useState(mealState.tags?.join(", ") || "");
   const [selectedMeal, setSelectedMeal] = useState<MealOption | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -47,6 +49,7 @@ export default function EditMealModal({
         : [createBlankIngredientDraft()]
     );
     setInstructions(mealState.instructions || "");
+    setTagsInput(mealState.tags?.join(", ") || "");
     setSelectedMeal(
       mealState.id ? uniqueMealsDatabase.find((meal) => meal.value.id === mealState.id) || null : null
     );
@@ -68,6 +71,7 @@ export default function EditMealModal({
           : [createBlankIngredientDraft()]
       );
       setInstructions(mealWithIngredients.instructions || "");
+      setTagsInput(mealWithIngredients.tags?.join(", ") || "");
     }
 
     loadSelectedMeal();
@@ -86,6 +90,7 @@ export default function EditMealModal({
     const parsedIngredients = ingredients
       .map((ingredient, index) => draftToIngredient(ingredient, index))
       .filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient));
+    const tags = parseMealTags(tagsInput);
 
     setIsSaving(true);
     await updateMealWithIngredients(
@@ -95,6 +100,7 @@ export default function EditMealModal({
         date: mealState.date || undefined,
         type: mealState.type,
         instructions: instructions.trim() || undefined,
+        tags: tags.length > 0 ? tags : undefined,
       } as Meal,
       parsedIngredients
     );
@@ -140,6 +146,17 @@ export default function EditMealModal({
         </div>
 
         <IngredientEditor ingredients={ingredients} setIngredients={setIngredients} />
+
+        <div className="space-y-2">
+          <Label htmlFor="edit-meal-tags">Tags <span className="font-normal text-slate-400">(optional)</span></Label>
+          <Input
+            id="edit-meal-tags"
+            value={tagsInput}
+            onChange={event => setTagsInput(event.target.value)}
+            placeholder="Vegan, Gwen in town"
+          />
+          <p className="text-xs text-slate-500">Separate multiple tags with commas.</p>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="edit-meal-instructions">Instructions <span className="font-normal text-slate-400">(optional)</span></Label>
