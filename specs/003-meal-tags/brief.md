@@ -1,6 +1,6 @@
 # Meal Tags OpenClaw Pilot Brief
 
-Status: implemented locally; interactive browser review pending
+Status: implemented and verified locally; ready for review
 
 Branch: `work/meal-planner-openclaw-pilot`
 
@@ -155,7 +155,26 @@ meal did not close the nested picker, and the software keyboard could move the
 tall meal drawer below the viewport. The local fix closes the picker after
 accepting the typed value and uses Vaul's fixed/nested drawer behavior. Seth
 retested that narrow path in the private Control UI portal and reported **PASS**.
-The remaining tag lifecycle scenarios above are still pending.
+
+On 2026-11-08 and 2026-11-09, Seth completed the remaining private-portal QA:
+
+- Creating `Vegan, Gwen in town, vegan` produced two normalized tags that
+  persisted after reload: **PASS**.
+- Replacing the tags with `Vegan, Quick` preserved all other meal data and
+  grocery-list behavior: **PASS**.
+- Reusing the prior meal carried forward its latest tags, ingredients, and
+  instructions: **PASS**.
+- Copying the week preserved tags, and editing the copied meal did not change
+  its source: **PASS**.
+- Existing untagged meals and the responsive add/edit/details flows remained
+  usable: **PASS**.
+- A narrow week-grid review exposed card actions overflowing very small
+  columns. Replacing the fixed-gap action row with equal-width grid cells kept
+  details, edit, and delete controls inside the card; Seth retested it: **PASS**.
+
+The complete acceptance matrix now passes. TypeScript, `git diff --check`, and
+the local `/showcase/meal-planner` HTTP route were rechecked after the final
+responsive fix.
 
 Tag-based filtering or discovery while choosing recipes remains outside this
 pilot. Seth identified it as a useful follow-up once the persistence and

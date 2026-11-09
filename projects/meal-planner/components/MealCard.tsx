@@ -81,7 +81,9 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
           </div>
 
           <div
-            className={`flex min-h-8 justify-center gap-3 transition-opacity duration-150 ${
+            className={`grid min-h-8 w-full gap-1 transition-opacity duration-150 ${
+              hasDetails ? "grid-cols-3" : "grid-cols-2"
+            } ${
               confirmDelete ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
             aria-hidden={confirmDelete}
@@ -89,7 +91,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             {hasDetails && (
               <button
                 type="button"
-                className="rounded-md p-1 text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
                 onClick={() => setShowInstructions(true)}
                 aria-label={`View details for ${meal.title}`}
                 tabIndex={confirmDelete ? -1 : 0}
@@ -99,7 +101,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             )}
             <button
               type="button"
-              className="rounded-md p-1 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
+              className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
               onClick={() => onEdit(meal)}
               aria-label={`Edit ${meal.title}`}
               tabIndex={confirmDelete ? -1 : 0}
@@ -108,7 +110,7 @@ export default function MealCard({ dayString, meal, mealType, onAdd, onEdit }: M
             </button>
             <button
               type="button"
-              className="rounded-md p-1 text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700"
+              className="grid h-8 min-w-0 place-items-center rounded-md text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700"
               onClick={() => setConfirmDelete(true)}
               aria-label={`Delete ${meal.title}`}
               tabIndex={confirmDelete ? -1 : 0}
