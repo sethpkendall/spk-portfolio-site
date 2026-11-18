@@ -14,12 +14,18 @@ Implementation commit: `b12e99a`.
 - CLI browser OAuth was blocked by Neon's mobile localhost-redirect policy.
 - The owner supplied `NEON_API_KEY` through the masked protected store, restricted
   to `console.neon.tech`. Its plaintext is neither in this checkout nor exposed.
-- A protected Gateway request could not use the key because
-  `secrets.egressProxy.enabled` is false. No authenticated Neon request ran.
-  The existing project id/region and auth settings remain unverified.
-- Resume by enabling the supported protected egress path and restarting the
-  Gateway at a safe checkpoint, then starting a fresh run. Do not extract the
-  key or copy it to a plaintext environment file to bypass that boundary.
+- The earlier protected Gateway request could not use the key because protected
+  egress was disabled. Seth subsequently approved enablement and a Gateway
+  restart. On November 18, the supported CLI set
+  `secrets.egressProxy.enabled=true` after a successful schema-validated dry run;
+  a readback confirmed the saved setting. Restart and live credential proof are
+  still pending at this checkpoint. No authenticated Neon request has run.
+- A one-shot continuation is scheduled for 17:40:01 UTC on November 18 (job
+  `20a58c91-9c62-4898-89bc-468eda2e2f70`) in the originating conversation. It must
+  verify Gateway health and protected egress before testing the existing key
+  through Gateway-hosted exec. The existing project id/region and auth settings
+  remain unverified. Do not extract the key or copy it to a plaintext environment
+  file to bypass the protected delivery boundary.
 
 ## Results
 
