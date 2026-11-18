@@ -167,13 +167,19 @@ CONTENTFUL_PREVIEW_SECRET=your_preview_secret
 
 ## 📦 Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Styling**: Tailwind CSS
 - **CMS**: Contentful
-- **Database**: Dexie.js (IndexedDB wrapper)
+- **Database**: Dexie.js for public demos; Neon Postgres for the separate private meal planner
 - **UI Components**: Radix UI primitives
 - **Code Highlighting**: react-syntax-highlighter
 - **Icons**: Lucide React
+
+## Private meal planner
+
+The owner-only cloud planner is separate from the public browser-local showcase.
+See its [setup, recovery and release runbook](projects/private-meal-planner/README.md)
+and [verification status](projects/private-meal-planner/VERIFICATION.md).
 
 ## 📄 License
 
