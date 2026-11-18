@@ -147,6 +147,15 @@ npm run dev
 | `npm run start` | Start production server |
 | `npm run setup` | Initialize Contentful content |
 
+### Planning site changes with OpenSpec
+
+OpenSpec keeps each proposed change under `openspec/changes/`. In OpenClaw,
+ask for an OpenSpec proposal (or use `/openspec-propose`), review the generated
+proposal, requirements, design, and tasks, then separately ask to apply it.
+Codex uses `$openspec-propose` for the same workflow. The existing `.specify/`
+and `specs/` files are historical Spec Kit material; initializing OpenSpec does
+not migrate or remove them. Run `openspec doctor` to check the setup.
+
 ## 🔧 Environment Variables
 
 ```env
