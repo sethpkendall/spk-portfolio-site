@@ -5,7 +5,8 @@
 Local implementation on `work/private-meal-planner-neon`; nothing pushed or
 deployed. No Neon project or branch has been modified. Real provider sign-in,
 SMTP, isolated live migration and two-device acceptance are pending.
-Implementation commit: `b12e99a`.
+Implementation commit: `b12e99a`. Gateway recovery is now verified; Neon API
+authentication is blocked by HTTP 401, as detailed below.
 
 ## Tooling and provider status
 
@@ -15,17 +16,45 @@ Implementation commit: `b12e99a`.
 - The owner supplied `NEON_API_KEY` through the masked protected store, restricted
   to `console.neon.tech`. Its plaintext is neither in this checkout nor exposed.
 - The earlier protected Gateway request could not use the key because protected
-  egress was disabled. Seth subsequently approved enablement and a Gateway
-  restart. On November 18, the supported CLI set
-  `secrets.egressProxy.enabled=true` after a successful schema-validated dry run;
-  a readback confirmed the saved setting. Restart and live credential proof are
-  still pending at this checkpoint. No authenticated Neon request has run.
-- A one-shot continuation is scheduled for 17:40:01 UTC on November 18 (job
-  `20a58c91-9c62-4898-89bc-468eda2e2f70`) in the originating conversation. It must
-  verify Gateway health and protected egress before testing the existing key
-  through Gateway-hosted exec. The existing project id/region and auth settings
-  remain unverified. Do not extract the key or copy it to a plaintext environment
-  file to bypass the protected delivery boundary.
+  egress was disabled. Seth approved enablement and a Gateway restart. The
+  November 18 unattended continuation verified the saved setting is
+  `secrets.egressProxy.enabled=true` and the systemd Gateway service is active
+  with PID `139082`, started at **17:38:22 UTC**. The CLI connectivity probe
+  passed; a bounded loopback `/healthz` request returned HTTP 200 with
+  `{"ok":true,"status":"live"}`. CLI and Gateway report version `2026.9.8`.
+  No additional restart or upgrade was performed.
+- Gateway-hosted exec received the existing protected sentinel and proxy/CA
+  environment. The bounded read-only `GET
+  https://console.neon.tech/api/v2/projects` returned **HTTP 401**:
+  `supplied credentials do not pass authentication` (request id
+  `24a5caa9-c6e2-41c7-a63e-59ab225e3911`). The Gateway egress audit recorded
+  `kind=forwarded`, `host=console.neon.tech`, `substituted=true`. This proves
+  destination-bound credential delivery, **not** usable Neon authentication.
+  The provider rejection does not distinguish an invalid, expired, revoked,
+  or otherwise unsuitable credential; the actual cause is not yet known.
+- Secret metadata still identifies `NEON_API_KEY` as protected with only
+  `console.neon.tech` allowed. The management key was not printed, extracted,
+  or persisted by this continuation. The existing ignored `.env.local` remains
+  mode `0600` with the supplied owner allowlist email only; no database/auth
+  runtime credentials were available to add.
+- Because project discovery was denied, the existing Meal-planner project's
+  id, region, default branch and auth configuration remain **unverified**.
+  No project/branch/auth configuration or database migration was modified.
+  No OTP or test email was sent; nothing was pushed or deployed.
+- **Resume prerequisite:** Seth must verify or replace the existing Neon API
+  credential through the protected masked-entry flow when present. Do not
+  request a duplicate automatically or retry by extracting it. After any
+  replacement, start a fresh run (Gateway exec snapshots the store on its
+  first command), repeat bounded read-only project discovery, and inspect the
+  existing project before creating/configuring only its isolated development
+  branch. No further Gateway restart is indicated by the observed 401.
+- OpenSpec task **5.2 remains pending**. Live isolated migration/idempotency,
+  managed auth configuration, real owner OTP delivery/sign-in and two-device
+  acceptance are not satisfied by the local test results below. Production
+  SMTP/CMS/deployment checks remain separate release gates in README.md.
+- One-shot continuation `20a58c91-9c62-4898-89bc-468eda2e2f70` completed its
+  recovery check and stopped at the authentication blocker; it is not a
+  credential retry loop.
 
 ## Results
 
