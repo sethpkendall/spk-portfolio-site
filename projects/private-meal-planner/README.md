@@ -49,9 +49,13 @@ composite foreign keys also prevent cross-owner references.
 
 ## Managed authentication setup
 
-Enable Neon Auth (Managed Better Auth) on the development branch, enable the
-Email OTP sign-in plugin, and configure its allowed origin for the development
-app. Use its branch-specific Auth URL in `NEON_AUTH_BASE_URL`. Production needs
+Inspect Neon Auth (Managed Better Auth) on the development branch first; a child
+of an Auth-enabled branch can already have its own working Auth endpoint.
+Ensure email sign-up/sign-in is enabled. Email OTP is a managed Neon capability,
+not a plugin to install manually. Configure the exact allowed origin for the
+development app and use its branch-specific Auth URL in `NEON_AUTH_BASE_URL`.
+Keep `APP_ORIGIN` aligned with the actual private preview origin; a portal's
+origin can differ from its local server address. Production needs
 the exact HTTPS origin in both Neon configuration and `APP_ORIGIN`.
 
 Only the configured owner email can request a code through this app. The provider
