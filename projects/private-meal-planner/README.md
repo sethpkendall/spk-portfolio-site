@@ -12,6 +12,7 @@ localStorage, sessionStorage, or a service worker.
 - [Private-access specification](../../openspec/specs/private-planner-access/spec.md)
 - [Archived change and completed tasks](../../openspec/changes/archive/2026-11-19-private-meal-planner-neon/)
 - [Verification and live setup status](VERIFICATION.md)
+- [Next-session deployment handoff and approval boundary](DEPLOYMENT-HANDOFF.md)
 - [Private SQL schema](../../db/migrations/001_private_meal_planner.sql)
 - [Environment template](../../.env.example)
 
