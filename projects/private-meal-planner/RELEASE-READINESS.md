@@ -15,7 +15,10 @@ see [VERIFICATION](VERIFICATION.md) for their earlier evidence.
   demo, broken styling on the demo link, and `/auth/sign-in` unavailable. The
   private sign-in unavailability is expected until preview runtime variables
   are configured; it is not a completed login check. Homepage and post QA
-  were not reported.
+  were not reported. A later Chrome-on-Android screenshot shows the keyboard
+  open with the Add Meal drawer compressed into a shallow white strip, its
+  title clipped, and the meal-name field partly covered. This corroborates the
+  reproduced drawer collapse; it is not a retest of the unpublished fix.
 - Local follow-up `fb97b20` removes Vaul's `fixed` setting from the mobile
   meal sheets, which otherwise cumulatively shrank the drawer during staged
   keyboard viewport changes, and gives demo links a visible violet underline.
