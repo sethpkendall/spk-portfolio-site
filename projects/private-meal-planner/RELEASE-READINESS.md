@@ -5,11 +5,29 @@ approval**. Recheck mutable provider settings immediately before an approved
 release. The accepted implementation and archived OpenSpec change remain closed;
 see [VERIFICATION](VERIFICATION.md) for their earlier evidence.
 
+## Preview QA checkpoint — November 19
+
+- Seth approved a preview-only push of `work/private-meal-planner-neon` at
+  `aaa8942`. That exact ref was pushed; Vercel reported a successful deployment.
+  `main` was not pushed. The preview is behind Vercel Authentication, so the
+  agent has not inspected rendered pages directly.
+- Seth's mobile check found a meal-name input layout failure on the public
+  demo, broken styling on the demo link, and `/auth/sign-in` unavailable. The
+  private sign-in unavailability is expected until preview runtime variables
+  are configured; it is not a completed login check. Homepage and post QA
+  were not reported.
+- Local follow-up `fb97b20` removes Vaul's `fixed` setting from the mobile
+  meal sheets, which otherwise cumulatively shrank the drawer during staged
+  keyboard viewport changes, and gives demo links a visible violet underline.
+  Mobile browser regressions and TypeScript passed locally. The fix has **not**
+  been pushed or checked on the protected Vercel preview. A new preview-only
+  push needs separate authorization; no production action is implied.
+
 ## Candidate and observed state
 
 | Area | Result |
 | --- | --- |
-| Git | Clean `work/private-meal-planner-neon` at `4429df3` before this update; remote `main` was rechecked at `276e928`, and the feature branch remains absent remotely. The full three-dot diff at that point had 67 files and 14 unpublished commits, including OpenSpec setup, the Next.js upgrade, planner code/tests, and operational documentation. This documentation update adds one more local commit. PR state remains unverified because GitHub API access is unavailable in this session. |
+| Git | Feature branch was pushed only at `aaa8942` for a Vercel preview; local follow-up `fb97b20` is unpublished. Remote `main` was last rechecked at `276e928`. The full branch includes OpenSpec setup, the Next.js upgrade, planner code/tests, and operational documentation. Recheck the current three-dot diff before publication. PR state remains unverified because GitHub API access is unavailable in this session. |
 | Public site | `https://sethpkendall.com/` and `/showcase/meal-planner` return 200 from Vercel; `www` redirects to the canonical host. `/meal-planner` and `/auth/sign-in` still return 404. Seth identified the existing Vercel project as [`seth-kendalls-projects/spk-portfolio-site`](https://vercel.com/seth-kendalls-projects/spk-portfolio-site) and confirmed that pushing the feature branch creates a preview and pushing `main` redeploys production. The private project URL is not independently readable with current credentials, so project ID, connected-repository settings, build/runtime settings, and rollback controls remain uninspected. |
 | Vercel variables | Seth's November 19 screenshot shows `CONTENTFUL_CMA_TOKEN`, `CONTENTFUL_ACCESS_TOKEN`, and `CONTENTFUL_SPACE_ID` marked “All Environments,” plus a first variable whose displayed name is truncated to `CONTENTFUL_P…CCESS_TOKEN` (likely the preview access token, but not verified). It exposes no values. The planner runtime names, `CONTENTFUL_PREVIEW_SECRET`, and `CONTENTFUL_REVALIDATE_SECRET` are not shown; the screenshot does not establish whether they are absent elsewhere. The CMA token is for content management, not the runtime delivery token used by the site build. |
 | Neon | Read-only scoped API confirmed project `red-butterfly-13807271` (`Meal-planner`, AWS Ohio, PostgreSQL 18). Default `production` is `br-gentle-rain-berb08uc`; `private-planner-dev` is child `br-fragrant-base-bev6mh1o`. Production Auth uses `https://ep-calm-queen-bexyouy8.neonauth.c-9.us-east-2.aws.neon.tech/neondb/auth`, has no trusted domains, uses shared email delivery, and has only `neondb_owner` in the role list. The prior development migration and live checks did not touch production; production schema presence was not queried in this check. |
@@ -41,12 +59,13 @@ see [VERIFICATION](VERIFICATION.md) for their earlier evidence.
 ## Proposed execution sequence — requires separate explicit confirmation
 
 1. Freeze and review the exact PR diff from the candidate commit against
-   refreshed `main`. After explicit preview-push approval, push only
-   `work/private-meal-planner-neon` to the repository origin; this creates a
-   Vercel preview, not a production release. Inspect the preview build and
-   homepage/posts/demo; with no planner runtime variables it should show the
-   private route's unavailable state, not an owner session. Do not mix sibling
-   worktrees or assume the unpublished commits are a narrow code-only diff.
+   refreshed `main`. After a new explicit preview-push approval, push only
+   `work/private-meal-planner-neon` to the repository origin; this updates the
+   Vercel preview, not production. Review Vercel's build and have a logged-in
+   tester inspect homepage/posts/demo and the mobile keyboard/link fixes. With
+   no planner runtime variables the private route should show its unavailable
+   state, not an owner session. Do not mix sibling worktrees or assume the
+   branch is a narrow code-only diff.
 2. After approval of the named Neon `production` branch, check its schema and
    migration ledger, apply only `001_private_meal_planner` through a separate
    unpooled migration credential, verify the ledger/checksum, and create/grant
@@ -73,9 +92,10 @@ verifying the project-specific rollback mechanism. This rolls back code, **not**
 database writes, email configuration, or owner data. Any database restoration is
 a separate reviewed operation. Do not use the fixture build as a rollback artifact.
 
-No push, production migration, production configuration change, or deployment was
-made while writing this record. A bounded preview-branch push can be approved
-separately from production work. The eventual production approval request must
+No additional push, production migration, production configuration change, or
+production deployment was made for this checkpoint. A further preview-branch
+push can be approved separately from production work. The eventual production
+approval request must
 name the Vercel project and exact Git/deployment actions, production branch,
 email solution, test status, remaining issues, and rollback target; this record
 alone is not that approval.
