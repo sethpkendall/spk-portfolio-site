@@ -6,9 +6,9 @@ Local implementation on `work/private-meal-planner-neon`; nothing pushed or
 deployed. The isolated Neon `private-planner-dev` branch is configured and its
 migration and live database checks pass. The existing `production` branch was
 not changed. Real owner OTP delivery, sign-in, and authorized private-plan reads
-now pass. First-use empty-state confirmation, reload/session restoration, and
-two-device acceptance remain pending; production SMTP and CMS configuration
-remain separate release gates.
+now pass. Seth also confirmed the private planner starts empty and remains
+signed in after refresh. Two-device acceptance remains pending; production
+SMTP and CMS configuration remain separate release gates.
 Implementation commit: `b12e99a`. OpenSpec remains **10/11 complete** because
 task 5.2 includes real owner and device acceptance, not just database setup.
 
@@ -102,11 +102,12 @@ task 5.2 includes real owner and device acceptance, not just database setup.
   sign-in appeared to work. Server logs independently show HTTP 200 for the
   managed code request and OTP sign-in, followed by `/meal-planner` and
   authorized `/api/private-meal-planner` reads returning HTTP 200. This satisfies
-  the manual acceptance gate for the preview initialization fix; it can now be
-  committed with its setup and verification documentation. No one-time code, session
+  the manual acceptance gate for the preview initialization fix, committed
+  locally as `3444e5a` with setup and verification documentation. No one-time code, session
   token, or private record contents were collected from Seth's browser.
-- **Next:** confirm the private plan starts empty and remains signed in after
-  reload. Then save all meal fields on device A, sign in/refresh device B and
+- **First use and refresh: Pass on November 19.** Seth confirmed an empty
+  private weekly planner and that the session remained signed in after refresh.
+- **Next:** save all meal fields on device A, sign in/refresh device B and
   compare; exercise stale edits, groceries, export, confirmed clear, reload,
   expiry/sign-out and demo continuity. Record Pass/Fail/Unclear; task 5.2 stays
   unchecked until its actual live acceptance criteria pass. Do not archive.
