@@ -107,6 +107,20 @@ task 5.2 includes real owner and device acceptance, not just database setup.
   token, or private record contents were collected from Seth's browser.
 - **First use and refresh: Pass on November 19.** Seth confirmed an empty
   private weekly planner and that the session remained signed in after refresh.
+- **Preview recovery: Pass on November 19.** On continuation, no portal was
+  registered and the old app server stopped responding. Reopened `p3111` for
+  `/meal-planner` on local port `3111`; the newly allocated private origin is
+  recorded in ignored `.env.local`. Verified the pinned Neon branch is
+  `private-planner-dev` and not the default, added only the new exact trusted
+  origin while preserving existing domains, and updated only `APP_ORIGIN`.
+  Restarted the Node 26 development server with the returned `PUBLIC_URL`.
+  Local and exact portal routes returned HTTP 200. Standalone and embedded
+  browser probes confirmed HMR and React initialization, anonymous private-data
+  denial, and one non-owner sign-in POST with no navigation (expected HTTP 403,
+  no email sent). Control UI confirmed the portal opened on the right. These
+  probes do not establish a new owner login or cross-device acceptance result.
+  Cookie secret, database configuration, planner data and production were not
+  changed. The development management key remained in the protected store.
 - **Next:** save all meal fields on device A, sign in/refresh device B and
   compare; exercise stale edits, groceries, export, confirmed clear, reload,
   expiry/sign-out and demo continuity. Record Pass/Fail/Unclear; task 5.2 stays
