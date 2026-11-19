@@ -14,6 +14,15 @@ Production SMTP, CMS configuration, and the unrun live scenarios below remain
 separate release checks. Implementation commit: `b12e99a`. OpenSpec is
 **11/11 complete** with task 5.2 accepted by the owner on November 19.
 
+Closeout on November 19: synchronized both capabilities (9 requirements) into
+`openspec/specs/`, verified exact requirement/scenario preservation and strict
+validation, and archived the completed change at
+[`2026-11-19-private-meal-planner-neon`](../../openspec/changes/archive/2026-11-19-private-meal-planner-neon/).
+Updated documentation links and recorded login access without changing app
+behavior. No new runtime configuration, provider changes or data mutations were
+part of closeout. The development preview was left available; this is a local
+review checkpoint, not a release.
+
 ## Tooling and provider status
 
 - Neon CLI `9.6.3` is installed and runnable as `neon`.
@@ -134,8 +143,8 @@ separate release checks. Implementation commit: `b12e99a`. OpenSpec is
   automated browser/database evidence remains valid, but this acceptance does
   not turn those into live manual passes. Retain them as pre-deployment checks,
   alongside production SMTP and a CMS-configured build. No destructive clear
-  or session invalidation was performed. Review before a separately requested
-  archive or publication; no additional physical-device retest is required to
+  or session invalidation was performed. Review before publication;
+  no additional physical-device retest is required to
   close task 5.2 under Seth's accepted verification method.
 - No push, deployment, production migration, or production configuration change
   occurred. The prior one-shot recovery job is finished, not a retry loop.

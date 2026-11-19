@@ -8,10 +8,20 @@ localStorage, sessionStorage, or a service worker.
 
 ## Sources of truth
 
-- [Requirements and tasks](../../openspec/changes/private-meal-planner-neon/)
+- [Meal-planning specification](../../openspec/specs/private-meal-planning/spec.md)
+- [Private-access specification](../../openspec/specs/private-planner-access/spec.md)
+- [Archived change and completed tasks](../../openspec/changes/archive/2026-11-19-private-meal-planner-neon/)
 - [Verification and live setup status](VERIFICATION.md)
 - [Private SQL schema](../../db/migrations/001_private_meal_planner.sql)
 - [Environment template](../../.env.example)
+
+## Access
+
+Open `/meal-planner`; when signed out, choose **Sign in**. The login page is also
+available directly at `/auth/sign-in`, and successful sign-out returns there.
+There is currently no login link in the site header or public demo. The private
+development preview is available through OpenClaw Portals; it is not a public
+deployment. No new navigation link was added during closeout.
 
 ## Local setup
 
@@ -119,7 +129,7 @@ npm run typecheck
 npx playwright install chromium
 npm run test:browser
 npm run build
-openspec validate private-meal-planner-neon --strict
+openspec validate --specs --strict
 git diff --check
 ```
 
@@ -133,11 +143,14 @@ Implementation acceptance is complete (11/11 OpenSpec tasks). The isolated live
 migration and duplicate-free retry, real owner sign-in and reload, and saved-meal
 comparison across two browsers passed. On November 19, 2026, Seth explicitly
 accepted the second browser as satisfying the two-device gate; this is not a
-claim of testing two physical devices. See VERIFICATION.md for evidence.
+claim of testing two physical devices. The change was archived on November 19,
+2026, with both capabilities synchronized into the main specifications.
+See VERIFICATION.md for evidence.
 
 Before deployment: complete the remaining live owner-session checks for stale
 edits, grocery continuity, sign-out/session expiry, export, confirmed clear and
 demo continuity; configure production SMTP and server-only Vercel env; review
 the framework upgrade and run a CMS-configured build. Existing automated checks
 do not substitute for unrun live checks. Push, production migration, and
-deployment require their separately authorized steps. Review before archiving.
+deployment require their separately authorized steps. The completed local branch
+is ready for review; archiving does not imply production readiness or deployment.

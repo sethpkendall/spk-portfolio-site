@@ -29,4 +29,4 @@
 ## Workflow follow-up
 
 - On 2026-11-19, Seth reported completing the saved-meal check in another browser and explicitly accepted it as satisfying the two-device acceptance gate. Evidence is two browsers, not two physical devices; see `projects/private-meal-planner/VERIFICATION.md` for the exact verification boundary and remaining release checks.
-- All implementation tasks are complete. Review before archiving; push and deployment remain separately authorized steps.
+- All implementation tasks are complete. Archived on 2026-11-19 after both capability specs were synchronized and strictly validated; push and deployment remain separately authorized steps.
