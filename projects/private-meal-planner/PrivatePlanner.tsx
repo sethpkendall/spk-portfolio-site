@@ -341,7 +341,7 @@ export default function PrivatePlanner() {
         <Button variant="outline" onClick={signOut}>
           Retry sign-out
         </Button>
-        <Link className="block underline" href="/showcase/meal-planner">
+        <Link className="private-demo-link block" href="/showcase/meal-planner">
           Open local demo
         </Link>
       </main>
@@ -361,7 +361,7 @@ export default function PrivatePlanner() {
             One plan across your devices. Refresh to see changes made elsewhere.
           </p>
           <Link
-            className="text-sm underline text-slate-500"
+            className="private-demo-link text-sm"
             href="/showcase/meal-planner"
           >
             Separate browser-local demo

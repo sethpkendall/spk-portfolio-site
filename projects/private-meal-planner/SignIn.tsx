@@ -113,7 +113,7 @@ export default function SignIn({ configured }: { configured: boolean }) {
           )}
         </form>
       )}
-      <Link href="/showcase/meal-planner" className="block text-sm underline">
+      <Link href="/showcase/meal-planner" className="private-demo-link block text-sm">
         Use the local demo without signing in
       </Link>
     </main>

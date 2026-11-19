@@ -143,3 +143,57 @@ test("demo IndexedDB survives private visits, clear and sign-out without uploadi
   await page.goto("/showcase/meal-planner");
   await expect(page.getByRole("main").first()).toBeVisible();
 });
+
+test("mobile demo meal drawer stays usable as the keyboard opens", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "mobile");
+  await page.goto("/showcase/meal-planner");
+  await page.getByRole("button", { name: "Add dinner" }).first().click();
+  const drawer = page.getByRole("dialog");
+  const name = page.getByPlaceholder("Meal name");
+  await name.click();
+
+  // Mobile keyboards resize the visual viewport in steps. Vaul must not
+  // subtract the full keyboard height from an already shortened drawer.
+  for (const height of [750, 660, 570, 530]) {
+    await page.evaluate((value) => {
+      Object.defineProperty(window.visualViewport, "height", {
+        configurable: true,
+        value,
+      });
+      window.visualViewport?.dispatchEvent(new Event("resize"));
+    }, height);
+  }
+  const bounds = await drawer.evaluate((element) => {
+    const { height, bottom } = element.getBoundingClientRect();
+    return { height, bottom };
+  });
+  expect(bounds.height).toBeGreaterThan(400);
+  expect(bounds.bottom).toBeLessThanOrEqual(530);
+  await name.fill("Test meal");
+  await expect(name).toHaveValue("Test meal");
+
+  await page.evaluate(() => {
+    Object.defineProperty(window.visualViewport, "height", {
+      configurable: true,
+      value: window.innerHeight,
+    });
+    window.visualViewport?.dispatchEvent(new Event("resize"));
+  });
+  expect((await drawer.boundingBox())?.height).toBeGreaterThan(700);
+});
+
+test("private demo link is visibly styled despite global link rules", async ({
+  page,
+}) => {
+  await page.goto("/auth/sign-in");
+  const link = page.getByRole("link", {
+    name: "Use the local demo without signing in",
+  });
+  await expect(link).toHaveAttribute("href", "/showcase/meal-planner");
+  await expect(link).toHaveCSS("text-decoration-line", "underline");
+  expect(await link.evaluate((element) => getComputedStyle(element).color)).not.toBe(
+    "rgb(0, 0, 0)",
+  );
+});

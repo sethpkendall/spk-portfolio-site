@@ -80,7 +80,7 @@ export function MealCombobox({ addNewText, meals, selectedMeal, setSelectedMeal,
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} fixed nested>
+    <Drawer open={open} onOpenChange={setOpen} nested>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
           {selectedMeal ? <>{selectedMeal.label}</> : <>+ Pick Meal</>}

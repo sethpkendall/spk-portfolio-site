@@ -49,7 +49,7 @@ export default function ResponsiveMealDialog({
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} fixed>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[92vh] bg-white">
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>

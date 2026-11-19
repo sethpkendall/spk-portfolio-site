@@ -13,7 +13,7 @@ export default function Page() {
       <main className="mx-auto max-w-3xl p-6">
         <h1 className="text-2xl font-semibold">Private meal planner</h1>
         <p className="my-4">Your private planner is not available yet.</p>
-        <Link className="underline" href="/showcase/meal-planner">
+        <Link className="private-demo-link" href="/showcase/meal-planner">
           Open the browser-local demo
         </Link>
       </main>
