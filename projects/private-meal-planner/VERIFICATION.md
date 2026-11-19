@@ -7,10 +7,12 @@ deployed. The isolated Neon `private-planner-dev` branch is configured and its
 migration and live database checks pass. The existing `production` branch was
 not changed. Real owner OTP delivery, sign-in, and authorized private-plan reads
 now pass. Seth also confirmed the private planner starts empty and remains
-signed in after refresh. Two-device acceptance remains pending; production
-SMTP and CMS configuration remain separate release gates.
-Implementation commit: `b12e99a`. OpenSpec remains **10/11 complete** because
-task 5.2 includes real owner and device acceptance, not just database setup.
+signed in after refresh. Seth completed the saved-meal check in another browser
+and explicitly accepted it as satisfying the two-device gate. This is owner-
+reported two-browser verification, not a claim of two physical devices.
+Production SMTP, CMS configuration, and the unrun live scenarios below remain
+separate release checks. Implementation commit: `b12e99a`. OpenSpec is
+**11/11 complete** with task 5.2 accepted by the owner on November 19.
 
 ## Tooling and provider status
 
@@ -58,7 +60,7 @@ task 5.2 includes real owner and device acceptance, not just database setup.
   `neon_superuser`, role/database creator, or schema creator. Migration uses the
   separate `neondb_owner` credential.
 
-## Live verification and next owner step
+## Live verification and remaining release checks
 
 - Applied `001_private_meal_planner` only on the development branch. A second
   invocation reported **already applied; checksum verified**, with no duplicate
@@ -121,10 +123,20 @@ task 5.2 includes real owner and device acceptance, not just database setup.
   probes do not establish a new owner login or cross-device acceptance result.
   Cookie secret, database configuration, planner data and production were not
   changed. The development management key remained in the protected store.
-- **Next:** save all meal fields on device A, sign in/refresh device B and
-  compare; exercise stale edits, groceries, export, confirmed clear, reload,
-  expiry/sign-out and demo continuity. Record Pass/Fail/Unclear; task 5.2 stays
-  unchecked until its actual live acceptance criteria pass. Do not archive.
+- **Cross-client saved-meal check: Pass, owner-reported on November 19.**
+  In response to the all-fields comparison check, Seth reported completing it
+  in another browser and said to count it complete. He explicitly accepted this
+  as satisfying the two-device gate for task 5.2. Record the evidence as two
+  browsers, not two physical devices; browser names and operating systems were
+  not supplied. No independent inspection of his browser data was performed.
+- **Still unrun against real owner sessions:** stale edits, grocery continuity,
+  export, confirmed clear, expiry/sign-out and demo continuity. Their existing
+  automated browser/database evidence remains valid, but this acceptance does
+  not turn those into live manual passes. Retain them as pre-deployment checks,
+  alongside production SMTP and a CMS-configured build. No destructive clear
+  or session invalidation was performed. Review before a separately requested
+  archive or publication; no additional physical-device retest is required to
+  close task 5.2 under Seth's accepted verification method.
 - No push, deployment, production migration, or production configuration change
   occurred. The prior one-shot recovery job is finished, not a retry loop.
 

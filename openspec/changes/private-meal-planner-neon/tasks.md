@@ -23,9 +23,10 @@
 ## 5. Integrated verification and checkpoint
 
 - [x] 5.1 Run focused suites, typecheck/build and public-route/demo regression checks; record exact results and any environment-limited checks in the runbook.
-- [ ] 5.2 Connect the existing Neon project after owner authentication, verify isolated branch migration and real provider sign-in/two-device behavior; leave this task pending if owner interaction is unavailable.
+- [x] 5.2 Connect the existing Neon project after owner authentication, verify isolated branch migration and real provider sign-in/two-device behavior; leave this task pending if owner interaction is unavailable.
 - [x] 5.3 Review the focused diff and staged paths, run diff checks/OpenSpec validation, commit coherent units, and record a resumable checkpoint with deployment gates.
 
 ## Workflow follow-up
 
-- Push/review/deploy only after separate authorization; do not archive while live acceptance remains pending.
+- On 2026-11-19, Seth reported completing the saved-meal check in another browser and explicitly accepted it as satisfying the two-device acceptance gate. Evidence is two browsers, not two physical devices; see `projects/private-meal-planner/VERIFICATION.md` for the exact verification boundary and remaining release checks.
+- All implementation tasks are complete. Review before archiving; push and deployment remain separately authorized steps.

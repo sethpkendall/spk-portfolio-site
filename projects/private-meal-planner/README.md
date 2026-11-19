@@ -129,10 +129,15 @@ and repository SQL. Neither proves real Neon login, email delivery, managed
 pooling, or simultaneous independent Postgres connections. See VERIFICATION.md
 for precisely what passed and what is still pending.
 
-Before deployment: verify a live isolated migration and duplicate-free retry;
-sign in with the real owner on two devices; save all meal fields on A, refresh B,
-test a stale B edit, sign-out/reload/session expiry, export and confirmed clear;
-confirm demo continuity; configure production SMTP and server-only Vercel env;
-review the framework upgrade and run a CMS-configured build. Push, production
-migration, and deployment require their separately authorized steps. Do not
-archive the OpenSpec change while live acceptance is pending.
+Implementation acceptance is complete (11/11 OpenSpec tasks). The isolated live
+migration and duplicate-free retry, real owner sign-in and reload, and saved-meal
+comparison across two browsers passed. On November 19, 2026, Seth explicitly
+accepted the second browser as satisfying the two-device gate; this is not a
+claim of testing two physical devices. See VERIFICATION.md for evidence.
+
+Before deployment: complete the remaining live owner-session checks for stale
+edits, grocery continuity, sign-out/session expiry, export, confirmed clear and
+demo continuity; configure production SMTP and server-only Vercel env; review
+the framework upgrade and run a CMS-configured build. Existing automated checks
+do not substitute for unrun live checks. Push, production migration, and
+deployment require their separately authorized steps. Review before archiving.
