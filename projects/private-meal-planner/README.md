@@ -57,6 +57,11 @@ development app and use its branch-specific Auth URL in `NEON_AUTH_BASE_URL`.
 Keep `APP_ORIGIN` aligned with the actual private preview origin; a portal's
 origin can differ from its local server address. Production needs
 the exact HTTPS origin in both Neon configuration and `APP_ORIGIN`.
+In development, `next.config.js` allows the hostname from `PUBLIC_URL` (or
+`APP_ORIGIN` when no portal URL is supplied) for Next.js dev assets and HMR.
+Without it, the preview can render HTML but fail to initialize the sign-in
+handler, so submitting the form merely reloads the page. This allowlist is
+development-only and does not change application or provider authorization.
 
 Only the configured owner email can request a code through this app. The provider
 verifies the code and issues HTTP-only session cookies; this code does not mint

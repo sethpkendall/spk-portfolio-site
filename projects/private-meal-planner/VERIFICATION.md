@@ -1,12 +1,14 @@
-# Verification checkpoint — 2026-11-18
+# Verification checkpoint — 2026-11-19
 
 ## Current boundary
 
 Local implementation on `work/private-meal-planner-neon`; nothing pushed or
 deployed. The isolated Neon `private-planner-dev` branch is configured and its
 migration and live database checks pass. The existing `production` branch was
-not changed. Real owner OTP delivery/sign-in and two-device acceptance remain
-pending; production SMTP and CMS configuration remain separate release gates.
+not changed. Real owner OTP delivery, sign-in, and authorized private-plan reads
+now pass. First-use empty-state confirmation, reload/session restoration, and
+two-device acceptance remain pending; production SMTP and CMS configuration
+remain separate release gates.
 Implementation commit: `b12e99a`. OpenSpec remains **10/11 complete** because
 task 5.2 includes real owner and device acceptance, not just database setup.
 
@@ -80,14 +82,31 @@ task 5.2 includes real owner and device acceptance, not just database setup.
   or test email was sent.
 - Preview: Control UI portal **Private meal planner — Neon development**
   (`p3111`), local server port `3111`, initial route `/auth/sign-in`. The
-  token-bearing portal URL stays outside Git. `portal_show` reported that
-  Seth's requesting Control UI disconnected; successful headless rendering
-  does not prove Seth saw or used the page. Keep the healthy preview running.
-  On Seth's next `ready`, list/reuse this portal and show it immediately. If
+  token-bearing portal URL stays outside Git. The preview was successfully
+  reopened after Seth reconnected. Keep the healthy preview running. If
   the Gateway has restarted, recover the private portal and update the local
   app origin and development trusted domain together before testing.
-- **Next:** owner requests a code and signs in; confirm the private plan starts
-  empty. Then save all meal fields on device A, sign in/refresh device B and
+- **Initial owner sign-in attempt: Fail; corrected on retry.** Seth reported
+  that Send sign-in code reloaded
+  the page and no email arrived. The reload was reproduced with no auth POST;
+  the dev server blocked the preview hostname's HMR connection, preventing
+  client initialization. A bounded `next.config.js` fix now allows only the
+  configured preview hostname in development. Four config assertions passed,
+  including no production allowance. Real portal browser probes passed both
+  top-level and embedded under the Control UI origin: HMR connected, React
+  hydrated, and a button click sent exactly one auth POST with no navigation.
+  The non-owner test address received the expected HTTP 403; no email was sent.
+  The SDK renders this denial as generic HTTP 403 rather than the server's
+  descriptive message. This is separate from the resolved reload defect.
+- **Owner retry: Pass on November 19.** Seth confirmed the email arrived and
+  sign-in appeared to work. Server logs independently show HTTP 200 for the
+  managed code request and OTP sign-in, followed by `/meal-planner` and
+  authorized `/api/private-meal-planner` reads returning HTTP 200. This satisfies
+  the manual acceptance gate for the preview initialization fix; it can now be
+  committed with its setup and verification documentation. No one-time code, session
+  token, or private record contents were collected from Seth's browser.
+- **Next:** confirm the private plan starts empty and remains signed in after
+  reload. Then save all meal fields on device A, sign in/refresh device B and
   compare; exercise stale edits, groceries, export, confirmed clear, reload,
   expiry/sign-out and demo continuity. Record Pass/Fail/Unclear; task 5.2 stays
   unchecked until its actual live acceptance criteria pass. Do not archive.
