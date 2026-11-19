@@ -18,7 +18,9 @@ see [VERIFICATION](VERIFICATION.md) for their earlier evidence.
   were not reported. A later Chrome-on-Android screenshot shows the keyboard
   open with the Add Meal drawer compressed into a shallow white strip, its
   title clipped, and the meal-name field partly covered. This corroborates the
-  reproduced drawer collapse; it is not a retest of the unpublished fix.
+  reproduced drawer collapse; it is not a retest of the unpublished fix. Seth
+  suspects the issue might disappear on deployment to `main`, but that remains
+  an untested possibility, not a reason to skip preview or on-device QA.
 - Local follow-up `fb97b20` removes Vaul's `fixed` setting from the mobile
   meal sheets, which otherwise cumulatively shrank the drawer during staged
   keyboard viewport changes, and gives demo links a visible violet underline.
